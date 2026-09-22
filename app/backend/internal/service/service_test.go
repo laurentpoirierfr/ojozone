@@ -15,6 +15,9 @@ const (
 	productID  = "ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"
 	categoryID = "765c4c3e-9a2e-4a7f-a272-586a311cbb80"
 	sessionID  = "9d2b4df0-3b6a-4a4f-bbfe-1c4e69f1b2a7"
+	sourceID   = "0cbdc6bf-361b-4878-b407-e77f735098af"
+
+	contributionID = "edfb822d-d78a-481e-9945-850e337a33fd"
 )
 
 func newTestService(repository repository.Repository) *OjoZone {
@@ -65,6 +68,33 @@ func (r *repositoryStub) RevokeAllSessionsForUser(context.Context, string) error
 }
 func (r *repositoryStub) ListMyContributions(context.Context, string, domain.Pagination) ([]domain.Contribution, error) {
 	return []domain.Contribution{}, nil
+}
+func (r *repositoryStub) FindCommunitySourceID(context.Context) (string, error) {
+	return sourceID, nil
+}
+func (r *repositoryStub) CreateProductContribution(context.Context, domain.ProductContributionSubmit) (string, string, error) {
+	return contributionID, domain.StatusPending, nil
+}
+func (r *repositoryStub) CreateFuelContribution(context.Context, domain.FuelContributionSubmit) (string, string, error) {
+	return contributionID, domain.StatusPending, nil
+}
+func (r *repositoryStub) GetProductContribution(context.Context, string) (domain.ContributionDetail, error) {
+	return domain.ContributionDetail{}, domain.ErrNotFound
+}
+func (r *repositoryStub) GetFuelContribution(context.Context, string) (domain.ContributionDetail, error) {
+	return domain.ContributionDetail{}, domain.ErrNotFound
+}
+func (r *repositoryStub) UpdateProductContribution(context.Context, string, string, domain.ProductContributionSubmit) error {
+	return nil
+}
+func (r *repositoryStub) UpdateFuelContribution(context.Context, string, string, domain.FuelContributionSubmit) error {
+	return nil
+}
+func (r *repositoryStub) DeleteProductContribution(context.Context, string, string) error {
+	return nil
+}
+func (r *repositoryStub) DeleteFuelContribution(context.Context, string, string) error {
+	return nil
 }
 func (r *repositoryStub) ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error) {
 	return nil, nil

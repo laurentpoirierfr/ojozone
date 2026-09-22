@@ -239,11 +239,12 @@ func userFromAnonymizeRow(row db.AnonymizeUserRow) domain.User {
 func productContribution(row db.ListProductPriceContributionsRow) domain.Contribution {
 	quantity := numericString(row.Quantity)
 	fuelUnit := strings.TrimSpace(row.UnitCode)
+	isPromotion := row.IsPromotion
 	return domain.Contribution{
 		ID: uuidString(row.ID), Type: "product_price", Status: string(row.Status),
 		ObservedAt: row.ObservedAt.Time, CreatedAt: row.CreatedAt.Time,
 		Currency: strings.TrimSpace(row.Currency), Amount: numericString(row.Amount),
-		Quantity: &quantity, UnitCode: &fuelUnit,
+		Quantity: &quantity, UnitCode: &fuelUnit, IsPromotion: &isPromotion,
 		ConfidenceScore: nullableNumericString(row.ConfidenceScore), Subject: row.ProductName,
 		Location: domain.EntityRef{ID: uuidString(row.LocationID), Name: row.LocationName},
 		GeoArea:  domain.EntityRef{ID: uuidString(row.GeoAreaID), Name: row.GeoAreaName},

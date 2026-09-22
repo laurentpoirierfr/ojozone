@@ -330,6 +330,7 @@ SELECT
     o.currency,
     o.quantity,
     o.unit_code,
+    o.is_promotion,
     o.observed_at,
     o.status,
     o.confidence_score,
@@ -364,6 +365,7 @@ type ListProductPriceContributionsRow struct {
 	Currency        string             `json:"currency"`
 	Quantity        pgtype.Numeric     `json:"quantity"`
 	UnitCode        string             `json:"unit_code"`
+	IsPromotion     bool               `json:"is_promotion"`
 	ObservedAt      pgtype.Timestamptz `json:"observed_at"`
 	Status          ModerationStatus   `json:"status"`
 	ConfidenceScore pgtype.Numeric     `json:"confidence_score"`
@@ -393,6 +395,7 @@ func (q *Queries) ListProductPriceContributions(ctx context.Context, arg ListPro
 			&i.Currency,
 			&i.Quantity,
 			&i.UnitCode,
+			&i.IsPromotion,
 			&i.ObservedAt,
 			&i.Status,
 			&i.ConfidenceScore,

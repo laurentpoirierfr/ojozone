@@ -44,6 +44,19 @@ func (s serviceStub) DeleteMe(context.Context, string) error { return nil }
 func (s serviceStub) ListMyContributions(context.Context, string, domain.Pagination) ([]domain.Contribution, error) {
 	return []domain.Contribution{}, nil
 }
+func (s serviceStub) SubmitProductContribution(context.Context, string, domain.ProductContributionInput) (domain.ContributionResult, error) {
+	return domain.ContributionResult{Checks: []domain.ContributionCheck{}}, nil
+}
+func (s serviceStub) SubmitFuelContribution(context.Context, string, domain.FuelContributionInput) (domain.ContributionResult, error) {
+	return domain.ContributionResult{Checks: []domain.ContributionCheck{}}, nil
+}
+func (s serviceStub) GetContribution(context.Context, string, string, string) (domain.ContributionDetail, error) {
+	return domain.ContributionDetail{}, domain.ErrNotFound
+}
+func (s serviceStub) UpdateContribution(context.Context, string, string, domain.ContributionPatch) (domain.ContributionDetail, error) {
+	return domain.ContributionDetail{}, domain.ErrNotFound
+}
+func (s serviceStub) DeleteContribution(context.Context, string, string) error { return nil }
 func (s serviceStub) ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error) {
 	return []domain.Product{}, nil
 }
@@ -277,6 +290,11 @@ func TestWriteRoutesRequireAuthentication(t *testing.T) {
 		{method: http.MethodDelete, path: "/api/v1/locations/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
 		{method: http.MethodPost, path: "/api/v1/moderation-events", body: []byte(`{}`)},
 		{method: http.MethodGet, path: "/api/v1/admin/users"},
+		{method: http.MethodPost, path: "/api/v1/contributions/product-prices", body: []byte(`{}`)},
+		{method: http.MethodPost, path: "/api/v1/contributions/fuel-prices", body: []byte(`{}`)},
+		{method: http.MethodGet, path: "/api/v1/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
+		{method: http.MethodPatch, path: "/api/v1/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31", body: []byte(`{}`)},
+		{method: http.MethodDelete, path: "/api/v1/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
 	}
 
 	for _, test := range tests {
@@ -315,6 +333,20 @@ func TestInvalidTokenIsRejected(t *testing.T) {
 	}
 }
 
+func TestMemberCanSubmitContributions(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := newTestRouter(serviceStub{})
+	body := []byte(`{"product_id":"ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31","location_id":"9a80c20f-9055-442d-97d1-43ee336230f0","amount":"2.35","currency":"EUR","quantity":"1.000","unit_code":"L","observed_at":"2026-09-22T17:30:00Z"}`)
+	response := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/api/v1/contributions/product-prices", bytes.NewReader(body))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Authorization", testBearer(t, domain.RoleMember))
+	router.ServeHTTP(response, request)
+	if response.Code != http.StatusAccepted {
+		t.Fatalf("status obtenu %d, attendu %d (%s)", response.Code, http.StatusAccepted, response.Body.String())
+	}
+}
+
 func TestAuthRoutesAreRegistered(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	present := make(map[string]bool)
@@ -330,6 +362,11 @@ func TestAuthRoutesAreRegistered(t *testing.T) {
 		"PATCH /api/v1/me",
 		"DELETE /api/v1/me",
 		"GET /api/v1/me/contributions",
+		"POST /api/v1/contributions/product-prices",
+		"POST /api/v1/contributions/fuel-prices",
+		"GET /api/v1/contributions/:id",
+		"PATCH /api/v1/contributions/:id",
+		"DELETE /api/v1/contributions/:id",
 	}
 	for _, entry := range expected {
 		if !present[entry] {

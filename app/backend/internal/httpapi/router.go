@@ -92,6 +92,13 @@ func NewRouter(appService service.Service, manager tokenParser, staticFS fs.FS, 
 	me.DELETE("", handler.deleteMe)
 	me.GET("/contributions", handler.listMyContributions)
 
+	contributions := api.Group("/contributions", handler.authenticate)
+	contributions.POST("/product-prices", handler.submitProductPriceContribution)
+	contributions.POST("/fuel-prices", handler.submitFuelPriceContribution)
+	contributions.GET("/:id", handler.getContribution)
+	contributions.PATCH("/:id", handler.patchContribution)
+	contributions.DELETE("/:id", handler.deleteContribution)
+
 	api.GET("/products", handler.listProducts)
 	api.POST("/products", handler.authenticate, requireRole(domain.RoleAdmin), handler.upsertProduct)
 	api.GET("/products/by-barcode/:barcode", handler.getProductByBarcode)
@@ -491,6 +498,12 @@ func handleServiceError(c *gin.Context, err error, fallback string) {
 		writeProblem(c, http.StatusConflict, "email_already_used", "Un compte possède déjà cet email.")
 	case errors.Is(err, service.ErrInvalidProfile):
 		writeProblem(c, http.StatusBadRequest, "invalid_profile", err.Error())
+	case errors.Is(err, service.ErrInvalidContribution):
+		writeProblem(c, http.StatusBadRequest, "invalid_contribution", err.Error())
+	case errors.Is(err, service.ErrContributionNotModifiable):
+		writeProblem(c, http.StatusConflict, "not_modifiable", "La contribution a déjà été traitée et ne peut plus être modifiée.")
+	case errors.Is(err, service.ErrNoCommunitySource):
+		writeProblem(c, http.StatusServiceUnavailable, "service_unavailable", "Aucune source citoyenne n'est configurée.")
 	case errors.Is(err, service.ErrInvalidID), errors.Is(err, service.ErrInvalidBarcode), errors.Is(err, service.ErrInvalidPagination), errors.Is(err, service.ErrInvalidProduct), errors.Is(err, service.ErrInvalidPrice), errors.Is(err, service.ErrInvalidResource):
 		writeProblem(c, http.StatusBadRequest, "invalid_request", err.Error())
 	default:

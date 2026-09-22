@@ -30,6 +30,15 @@ type Repository interface {
 	RevokeSession(context.Context, string) error
 	RevokeAllSessionsForUser(context.Context, string) error
 	ListMyContributions(context.Context, string, domain.Pagination) ([]domain.Contribution, error)
+	FindCommunitySourceID(context.Context) (string, error)
+	CreateProductContribution(context.Context, domain.ProductContributionSubmit) (string, string, error)
+	CreateFuelContribution(context.Context, domain.FuelContributionSubmit) (string, string, error)
+	GetProductContribution(context.Context, string) (domain.ContributionDetail, error)
+	GetFuelContribution(context.Context, string) (domain.ContributionDetail, error)
+	UpdateProductContribution(context.Context, string, string, domain.ProductContributionSubmit) error
+	UpdateFuelContribution(context.Context, string, string, domain.FuelContributionSubmit) error
+	DeleteProductContribution(context.Context, string, string) error
+	DeleteFuelContribution(context.Context, string, string) error
 	ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error)
 	GetProduct(context.Context, string) (domain.Product, error)
 	GetProductByBarcode(context.Context, string) (domain.Product, error)

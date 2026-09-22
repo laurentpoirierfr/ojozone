@@ -69,11 +69,44 @@ func (c *Client) MyContributions(ctx context.Context, accessToken string) ([]Con
 	return contributions, problem, err
 }
 
+// SubmitProductContribution propose un prix produit (202 et statut pending).
+func (c *Client) SubmitProductContribution(ctx context.Context, accessToken string, payload map[string]any) (ContributionResult, *Problem, error) {
+	var result ContributionResult
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/contributions/product-prices", accessToken, payload, &result)
+	return result, problem, err
+}
+
+// SubmitFuelContribution propose un prix carburant (202 et statut pending).
+func (c *Client) SubmitFuelContribution(ctx context.Context, accessToken string, payload map[string]any) (ContributionResult, *Problem, error) {
+	var result ContributionResult
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/contributions/fuel-prices", accessToken, payload, &result)
+	return result, problem, err
+}
+
+// GetContribution expose une contribution au proprietaire ou a la moderation.
+func (c *Client) GetContribution(ctx context.Context, accessToken, id string) (ContributionDetail, *Problem, error) {
+	var detail ContributionDetail
+	problem, err := c.fetch(ctx, http.MethodGet, "/api/v1/contributions/"+id, accessToken, nil, &detail)
+	return detail, problem, err
+}
+
+// PatchContribution corrige une contribution encore pending.
+func (c *Client) PatchContribution(ctx context.Context, accessToken, id string, fields map[string]any) (ContributionDetail, *Problem, error) {
+	var detail ContributionDetail
+	problem, err := c.fetch(ctx, http.MethodPatch, "/api/v1/contributions/"+id, accessToken, fields, &detail)
+	return detail, problem, err
+}
+
+// DeleteContribution retire une contribution encore pending (204).
+func (c *Client) DeleteContribution(ctx context.Context, accessToken, id string) (*Problem, error) {
+	return c.fetch(ctx, http.MethodDelete, "/api/v1/contributions/"+id, accessToken, nil, nil)
+}
+
 // ListProducts recherche les produits publiquement (filtre search optionnel).
 func (c *Client) ListProducts(ctx context.Context, search string) ([]Product, PaginationMeta, *Problem, error) {
 	path := "/api/v1/products"
 	if search != "" {
-		path += "?search=" + url.QueryEscape(search)
+		path += "?q=" + url.QueryEscape(search)
 	}
 	var products []Product
 	meta, problem, err := c.fetchList(ctx, http.MethodGet, path, "", nil, &products)

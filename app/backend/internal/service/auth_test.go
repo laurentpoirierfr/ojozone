@@ -66,6 +66,33 @@ func (r *authRepositoryStub) RevokeAllSessionsForUser(context.Context, string) e
 func (r *authRepositoryStub) ListMyContributions(context.Context, string, domain.Pagination) ([]domain.Contribution, error) {
 	return []domain.Contribution{}, nil
 }
+func (r *authRepositoryStub) FindCommunitySourceID(context.Context) (string, error) {
+	return sourceID, nil
+}
+func (r *authRepositoryStub) CreateProductContribution(context.Context, domain.ProductContributionSubmit) (string, string, error) {
+	return contributionID, domain.StatusPending, nil
+}
+func (r *authRepositoryStub) CreateFuelContribution(context.Context, domain.FuelContributionSubmit) (string, string, error) {
+	return contributionID, domain.StatusPending, nil
+}
+func (r *authRepositoryStub) GetProductContribution(context.Context, string) (domain.ContributionDetail, error) {
+	return domain.ContributionDetail{}, domain.ErrNotFound
+}
+func (r *authRepositoryStub) GetFuelContribution(context.Context, string) (domain.ContributionDetail, error) {
+	return domain.ContributionDetail{}, domain.ErrNotFound
+}
+func (r *authRepositoryStub) UpdateProductContribution(context.Context, string, string, domain.ProductContributionSubmit) error {
+	return nil
+}
+func (r *authRepositoryStub) UpdateFuelContribution(context.Context, string, string, domain.FuelContributionSubmit) error {
+	return nil
+}
+func (r *authRepositoryStub) DeleteProductContribution(context.Context, string, string) error {
+	return nil
+}
+func (r *authRepositoryStub) DeleteFuelContribution(context.Context, string, string) error {
+	return nil
+}
 func (r *authRepositoryStub) ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error) {
 	return nil, nil
 }

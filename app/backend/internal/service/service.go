@@ -35,6 +35,12 @@ var (
 	ErrInvalidPrice = errors.New("invalid product price")
 	// ErrInvalidResource indique une charge utile invalide pour une ressource générique.
 	ErrInvalidResource = errors.New("invalid resource")
+	// ErrInvalidContribution indique une contribution invalide.
+	ErrInvalidContribution = errors.New("invalid contribution")
+	// ErrNoCommunitySource indique qu'aucune source citoyenne n'est configurée.
+	ErrNoCommunitySource = errors.New("community source not configured")
+	// ErrContributionNotModifiable indique qu'une contribution a déjà été traitée.
+	ErrContributionNotModifiable = errors.New("contribution no longer modifiable")
 )
 
 // Service expose les opérations métier consommées par les handlers HTTP.
@@ -48,6 +54,11 @@ type Service interface {
 	UpdateMe(context.Context, string, domain.UpdateProfileInput) (domain.User, error)
 	DeleteMe(context.Context, string) error
 	ListMyContributions(context.Context, string, domain.Pagination) ([]domain.Contribution, error)
+	SubmitProductContribution(context.Context, string, domain.ProductContributionInput) (domain.ContributionResult, error)
+	SubmitFuelContribution(context.Context, string, domain.FuelContributionInput) (domain.ContributionResult, error)
+	GetContribution(context.Context, string, string, string) (domain.ContributionDetail, error)
+	UpdateContribution(context.Context, string, string, domain.ContributionPatch) (domain.ContributionDetail, error)
+	DeleteContribution(context.Context, string, string) error
 	ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error)
 	GetProduct(context.Context, string) (domain.Product, error)
 	GetProductByBarcode(context.Context, string) (domain.Product, error)
