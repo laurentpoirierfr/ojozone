@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -15,6 +17,7 @@ import (
 
 	ojozone "github.com/laurentpoirierfr/ojozone"
 	_ "github.com/laurentpoirierfr/ojozone/docs"
+	"github.com/laurentpoirierfr/ojozone/internal/auth"
 	"github.com/laurentpoirierfr/ojozone/internal/httpapi"
 	"github.com/laurentpoirierfr/ojozone/internal/repository"
 	"github.com/laurentpoirierfr/ojozone/internal/service"
@@ -34,6 +37,9 @@ var (
 // @BasePath /
 // @schemes http https
 // @produce json
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	if os.Getenv("APP_ENV") == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -53,8 +59,9 @@ func main() {
 	}
 
 	repository := repository.NewPostgreSQL(db.New(pool))
-	appService := service.New(repository)
-	router := httpapi.NewRouter(appService, staticFS, httpapi.BuildInfo{
+	tokenManager := auth.NewManager(authSecret(), getenv("AUTH_ISSUER", "ojozone-api"), accessTokensTTL())
+	appService := service.New(repository, tokenManager)
+	router := httpapi.NewRouter(appService, tokenManager, staticFS, httpapi.BuildInfo{
 		Name: "ojozone-api", Version: version, Commit: commit, BuildTime: buildTime,
 	})
 
@@ -98,4 +105,28 @@ func getenv(name, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+// authSecret retourne la clé de signature des jetons, ou génère une clé éphémère en développement.
+func authSecret() string {
+	secret := getenv("AUTH_JWT_SECRET", "")
+	if secret == "" {
+		nonce := make([]byte, 32)
+		_, _ = rand.Read(nonce)
+		secret = base64.RawURLEncoding.EncodeToString(nonce)
+		slog.Warn("AUTH_JWT_SECRET absent : clé éphémère générée, les sessions seront invalidées au redémarrage")
+	}
+	if len(secret) < 32 {
+		slog.Warn("AUTH_JWT_SECRET trop courte, une longueur d'au moins 32 octets est recommandée")
+	}
+	return secret
+}
+
+// accessTokensTTL parse la durée de vie des jetons d'accès, 15 minutes par défaut.
+func accessTokensTTL() time.Duration {
+	ttl, err := time.ParseDuration(getenv("AUTH_ACCESS_TTL", "15m"))
+	if err != nil || ttl <= 0 {
+		return 15 * time.Minute
+	}
+	return ttl
 }

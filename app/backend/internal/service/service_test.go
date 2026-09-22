@@ -6,13 +6,20 @@ import (
 	"testing"
 	"time"
 
+	"github.com/laurentpoirierfr/ojozone/internal/auth"
 	"github.com/laurentpoirierfr/ojozone/internal/domain"
+	"github.com/laurentpoirierfr/ojozone/internal/repository"
 )
 
 const (
 	productID  = "ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"
 	categoryID = "765c4c3e-9a2e-4a7f-a272-586a311cbb80"
+	sessionID  = "9d2b4df0-3b6a-4a4f-bbfe-1c4e69f1b2a7"
 )
+
+func newTestService(repository repository.Repository) *OjoZone {
+	return New(repository, auth.NewManager("test-secret-0123456789-abcdefghij", "ojozone-test", time.Minute))
+}
 
 type repositoryStub struct {
 	upsertByIDCalls      int
@@ -28,6 +35,37 @@ type repositoryStub struct {
 }
 
 func (r *repositoryStub) Ping(context.Context) error { return nil }
+func (r *repositoryStub) CreateUser(context.Context, domain.RegisterInput, string) (domain.User, error) {
+	return domain.User{ID: productID, Email: "marie@example.com", Role: domain.RoleMember, Locale: "fr"}, nil
+}
+func (r *repositoryStub) GetUserByEmail(context.Context, string) (domain.UserWithPassword, error) {
+	return domain.UserWithPassword{}, domain.ErrNotFound
+}
+func (r *repositoryStub) GetUserByID(context.Context, string) (domain.User, error) {
+	return domain.User{ID: productID, Role: domain.RoleMember, Locale: "fr"}, nil
+}
+func (r *repositoryStub) UpdateUserProfile(context.Context, string, domain.UpdateProfileInput) (domain.User, error) {
+	return domain.User{ID: productID, Role: domain.RoleMember, Locale: "fr"}, nil
+}
+func (r *repositoryStub) AnonymizeUser(context.Context, string) (domain.User, error) {
+	return domain.User{ID: productID, Role: domain.RoleMember, Locale: "fr"}, nil
+}
+func (r *repositoryStub) CreateSession(context.Context, domain.Session) (domain.Session, error) {
+	return domain.Session{ID: sessionID, UserID: productID}, nil
+}
+func (r *repositoryStub) GetSessionByRefreshHash(context.Context, string) (domain.Session, error) {
+	return domain.Session{}, domain.ErrNotFound
+}
+func (r *repositoryStub) UpdateSessionRefresh(context.Context, string, string, time.Time) (domain.Session, error) {
+	return domain.Session{ID: sessionID}, nil
+}
+func (r *repositoryStub) RevokeSession(context.Context, string) error { return nil }
+func (r *repositoryStub) RevokeAllSessionsForUser(context.Context, string) error {
+	return nil
+}
+func (r *repositoryStub) ListMyContributions(context.Context, string, domain.Pagination) ([]domain.Contribution, error) {
+	return []domain.Contribution{}, nil
+}
 func (r *repositoryStub) ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error) {
 	return nil, nil
 }
@@ -87,7 +125,7 @@ func (r *repositoryStub) DeleteResource(context.Context, string, domain.Resource
 func TestUpsertProductUsesBarcodeWhenPresent(t *testing.T) {
 	repository := &repositoryStub{}
 	barcode := "3017620422003"
-	_, err := New(repository).UpsertProduct(context.Background(), validProductInput("", &barcode))
+	_, err := newTestService(repository).UpsertProduct(context.Background(), validProductInput("", &barcode))
 	if err != nil {
 		t.Fatalf("upsert inattendu en erreur : %v", err)
 	}
@@ -98,7 +136,7 @@ func TestUpsertProductUsesBarcodeWhenPresent(t *testing.T) {
 
 func TestUpsertProductWithoutBarcodeRequiresID(t *testing.T) {
 	repository := &repositoryStub{}
-	_, err := New(repository).UpsertProduct(context.Background(), validProductInput("", nil))
+	_, err := newTestService(repository).UpsertProduct(context.Background(), validProductInput("", nil))
 	if err != ErrInvalidProduct {
 		t.Fatalf("erreur obtenue %v, attendue %v", err, ErrInvalidProduct)
 	}
@@ -110,7 +148,7 @@ func TestUpsertProductWithoutBarcodeRequiresID(t *testing.T) {
 func TestReplaceProductUsesPathID(t *testing.T) {
 	repository := &repositoryStub{}
 	input := validProductInput("b738785b-63a7-43b0-8133-a007ba314ed2", nil)
-	_, err := New(repository).ReplaceProduct(context.Background(), productID, input)
+	_, err := newTestService(repository).ReplaceProduct(context.Background(), productID, input)
 	if err != nil {
 		t.Fatalf("remplacement inattendu en erreur : %v", err)
 	}
@@ -129,7 +167,7 @@ func validProductInput(id string, barcode *string) domain.ProductUpsert {
 func TestUpsertProductPriceUsesSourceRecord(t *testing.T) {
 	repository := &repositoryStub{}
 	input := validPriceInput()
-	_, err := New(repository).UpsertProductPrice(context.Background(), input)
+	_, err := newTestService(repository).UpsertProductPrice(context.Background(), input)
 	if err != nil {
 		t.Fatalf("upsert prix inattendu en erreur : %v", err)
 	}
@@ -142,7 +180,7 @@ func TestUpsertProductPriceRequiresSourceRecord(t *testing.T) {
 	repository := &repositoryStub{}
 	input := validPriceInput()
 	input.SourceRecordID = nil
-	_, err := New(repository).UpsertProductPrice(context.Background(), input)
+	_, err := newTestService(repository).UpsertProductPrice(context.Background(), input)
 	if err != ErrInvalidPrice {
 		t.Fatalf("erreur obtenue %v, attendue %v", err, ErrInvalidPrice)
 	}
@@ -151,7 +189,7 @@ func TestUpsertProductPriceRequiresSourceRecord(t *testing.T) {
 func TestReplaceProductPriceUsesPathID(t *testing.T) {
 	repository := &repositoryStub{}
 	input := validPriceInput()
-	_, err := New(repository).ReplaceProductPrice(context.Background(), productID, input)
+	_, err := newTestService(repository).ReplaceProductPrice(context.Background(), productID, input)
 	if err != nil {
 		t.Fatalf("remplacement prix inattendu en erreur : %v", err)
 	}
@@ -173,7 +211,7 @@ func validPriceInput() domain.ProductPriceUpsert {
 
 func TestCategoryPostUsesSlugUpsert(t *testing.T) {
 	repository := &repositoryStub{}
-	_, err := New(repository).UpsertResource(context.Background(), ResourceCategories, json.RawMessage(`{"slug":"food","name_i18n":{"fr":"Alimentation"}}`))
+	_, err := newTestService(repository).UpsertResource(context.Background(), ResourceCategories, json.RawMessage(`{"slug":"food","name_i18n":{"fr":"Alimentation"}}`))
 	if err != nil {
 		t.Fatalf("upsert catégorie inattendu en erreur : %v", err)
 	}
@@ -186,7 +224,7 @@ func TestCategoryPostUsesSlugUpsert(t *testing.T) {
 func TestFuelPricePostRequiresAndUsesSourceRecord(t *testing.T) {
 	repository := &repositoryStub{}
 	raw := json.RawMessage(`{"fuel_type_id":"ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31","location_id":"9a80c20f-9055-442d-97d1-43ee336230f0","source_id":"0cbdc6bf-361b-4878-b407-e77f735098af","amount_per_litre":"1.8990","currency":"EUR","observed_at":"2026-09-22T12:00:00Z","status":"approved","source_record_id":"fuel-42"}`)
-	_, err := New(repository).UpsertResource(context.Background(), ResourceFuelPrices, raw)
+	_, err := newTestService(repository).UpsertResource(context.Background(), ResourceFuelPrices, raw)
 	if err != nil {
 		t.Fatalf("upsert carburant inattendu en erreur : %v", err)
 	}

@@ -33,10 +33,10 @@
 
 ### P1 - Contributions et sécurité
 
-- [ ] Mettre en place l'authentification OpenID Connect/OAuth 2.1.
-- [ ] Appliquer les rôles membre, modérateur, administrateur et partenaire.
-- [ ] Protéger toutes les écritures et les routes `/api/v1/admin/*`.
-- [ ] Ajouter les contributions produit et carburant avec statut `pending`.
+- [~] Authentification par mot de passe : inscription, connexion, renouvellement et révocation (jetons JWT + refresh opaques avec rotation). OIDC/OAuth 2.1 en évolution possible.
+- [x] Appliquer les rôles membre, modérateur, administrateur et partenaire.
+- [x] Protéger toutes les écritures et les routes `/api/v1/admin/*`.
+- [ ] Ajouter les contributions produit et carburant avec statut `pending` (lecture du profil disponible via `/api/v1/me/contributions`).
 - [ ] Ajouter Cloudflare R2 et les URLs signées pour les preuves photo.
 - [ ] Implémenter la file de modération.
 - [ ] Ajouter quotas, limitation de débit et protection anti-abus.
@@ -91,6 +91,7 @@ Documents :
 - [x] Modéliser preuves, modération et agrégats mensuels.
 - [x] Créer les index géographiques, de recherche et d'unicité.
 - [x] Créer les migrations `up` et `down` compatibles avec `golang-migrate`.
+- [x] Ajouter la migration de la table `sessions` pour la rotation des jetons de rafraîchissement.
 - [x] Ajouter les scripts de provisionnement et de création de migrations.
 - [x] Valider un cycle réel `up → down → up` sur PostgreSQL 16/PostGIS.
 - [x] Ajouter PostgreSQL/PostGIS et `golang-migrate` au Compose local.
@@ -126,21 +127,26 @@ Documents :
 - [x] Standardiser les erreurs HTTP avec `application/problem+json`.
 - [x] Ajouter Swagger/Swaggo et générer les spécifications JSON/YAML.
 - [x] Ajouter le Makefile backend : génération, formatage, analyse, tests, build et exécution.
+- [x] Implémenter l'authentification : inscription, connexion, renouvellement et révocation de session.
+- [x] Ajouter les middlewares `authenticate` et `requireRole` pour contrôler les accès.
+- [x] Protéger les écritures du catalogue et des référentiels (admin), la modération (modérateur+) et l'administration.
+- [x] Exposer le profil courant : `GET/PATCH/DELETE /api/v1/me` et `GET /api/v1/me/contributions`.
+- [x] Mapper les erreurs d'authentification en `401 Unauthorized` / `403 Forbidden` via `application/problem+json`.
 
 Documentation interactive : `http://localhost:8080/swagger/index.html`
 
 ### Partiellement réalisé
 
 - [~] Validation métier : règles principales présentes, mais couverture à compléter pour toutes les ressources génériques.
-- [~] Tests unitaires : handlers et règles d'upsert principales couverts, mais pas chaque ressource.
+- [~] Tests unitaires : handlers et règles d'upsert principales couverts, ainsi que le parcours d'authentification, mais pas chaque ressource.
 - [~] Tests d'intégration : scénarios manuels validés contre PostgreSQL, mais non automatisés en CI.
 - [~] Pagination : `limit/offset` disponible ; le curseur prévu dans les spécifications reste à implémenter.
-- [~] API d'administration : routes présentes mais non protégées par authentification/autorisation.
 
 ### À faire
 
-- [ ] Ajouter l'authentification et l'autorisation par rôle.
-- [ ] Séparer clairement les routes publiques, membre, partenaire et administration.
+- [ ] Ajouter l'authentification OIDC/OAuth 2.1 (ex. « Continuer avec Google ») et la réinitialisation de mot de passe.
+- [ ] Activer la vérification d'e-mail et les parcours de compte associés.
+- [ ] Ajouter les contributions produit et carburant (soumission avec statut `pending`) et leur suivi.
 - [ ] Ajouter des DTO et validations dédiés à chaque ressource au lieu de réponses génériques lorsque nécessaire.
 - [ ] Documenter dans Swagger tous les paramètres de chemin des ressources génériques.
 - [ ] Ajouter des filtres métier : période, zone, statut, source et fraîcheur.
@@ -187,9 +193,9 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 
 ### Manquant dans l'API métier
 
-- [ ] Authentification : inscription, connexion, renouvellement et révocation.
-- [ ] Profil courant : `GET/PATCH/DELETE /api/v1/me`.
-- [ ] Contributions de l'utilisateur courant et suivi de statut.
+- [x] Authentification : inscription, connexion, renouvellement et révocation.
+- [x] Profil courant : `GET/PATCH/DELETE /api/v1/me`.
+- [~] Contributions de l'utilisateur courant : liste et statut disponibles, soumission avec statut `pending` à venir.
 - [ ] Signalement d'une observation.
 - [ ] Recherche géographique de proximité.
 - [ ] Historique agrégé produits, carburants, immobilier et revenus.
@@ -302,6 +308,6 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 - [ ] Un modérateur approuve ou rejette une contribution avec audit.
 - [ ] Une contribution approuvée alimente les agrégats.
 - [ ] Un administrateur importe un fichier sans créer de doublons.
-- [ ] La suppression d'un compte anonymise les contributions conservées.
+- [x] La suppression d'un compte anonymise l'utilisateur et révoque ses sessions.
 - [ ] Le web satisfait les exigences de performance et d'accessibilité définies.
 - [ ] L'application est déployée avec sauvegarde, supervision et procédure de restauration.

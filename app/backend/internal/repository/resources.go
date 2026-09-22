@@ -328,9 +328,10 @@ func (r *PostgreSQL) UpsertResource(ctx context.Context, resource string, input 
 		value = aggregate(row)
 	case "moderation-events":
 		v := input.(domain.ModerationEventAppend)
-		previous := db.NullModerationStatus{}
+		var previous *db.ModerationStatus
 		if v.PreviousStatus != nil {
-			previous = db.NullModerationStatus{ModerationStatus: db.ModerationStatus(*v.PreviousStatus), Valid: true}
+			status := db.ModerationStatus(*v.PreviousStatus)
+			previous = &status
 		}
 		row, e := r.queries.AppendModerationEvent(ctx, db.AppendModerationEventParams{ObservationType: v.ObservationType, ObservationID: postgresUUID(v.ObservationID), ModeratorID: nullablePostgresUUID(v.ModeratorID), PreviousStatus: previous, NewStatus: db.ModerationStatus(v.NewStatus), ReasonCode: v.ReasonCode, Note: v.Note})
 		err = e
@@ -499,8 +500,8 @@ func aggregate(v db.PriceAggregatesMonthly) domain.PriceAggregate {
 }
 func moderation(v db.ModerationEvent) domain.ModerationEvent {
 	var previous *string
-	if v.PreviousStatus.Valid {
-		text := string(v.PreviousStatus.ModerationStatus)
+	if v.PreviousStatus != nil {
+		text := string(*v.PreviousStatus)
 		previous = &text
 	}
 	return domain.ModerationEvent{ID: uuidString(v.ID), ObservationType: v.ObservationType, ObservationID: uuidString(v.ObservationID), ModeratorID: optionalUUID(v.ModeratorID), PreviousStatus: previous, NewStatus: string(v.NewStatus), ReasonCode: v.ReasonCode, Note: v.Note, CreatedAt: v.CreatedAt.Time}

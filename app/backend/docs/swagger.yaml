@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  domain.AuthResult:
+    properties:
+      tokens:
+        $ref: '#/definitions/domain.TokenPair'
+      user:
+        $ref: '#/definitions/domain.User'
+    type: object
   domain.CategoryUpsert:
     properties:
       id:
@@ -9,6 +16,37 @@ definitions:
       parent_id:
         type: string
       slug:
+        type: string
+    type: object
+  domain.Contribution:
+    properties:
+      amount:
+        type: string
+      confidence_score:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      geo_area:
+        $ref: '#/definitions/domain.EntityRef'
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/domain.EntityRef'
+      observed_at:
+        type: string
+      quantity:
+        type: string
+      source:
+        $ref: '#/definitions/domain.SourceRef'
+      status:
+        type: string
+      subject:
+        type: string
+      type:
+        type: string
+      unit_code:
         type: string
     type: object
   domain.EntityRef:
@@ -173,6 +211,14 @@ definitions:
       merchant_id:
         type: string
       name:
+        type: string
+    type: object
+  domain.LoginInput:
+    properties:
+      email:
+        example: marie@example.com
+        type: string
+      password:
         type: string
     type: object
   domain.MerchantUpsert:
@@ -356,6 +402,29 @@ definitions:
         maxLength: 16
         type: string
     type: object
+  domain.RefreshInput:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  domain.RegisterInput:
+    properties:
+      display_name:
+        maxLength: 80
+        type: string
+      email:
+        example: marie@example.com
+        type: string
+      locale:
+        enum:
+        - fr
+        - en
+        example: fr
+        type: string
+      password:
+        minLength: 8
+        type: string
+    type: object
   domain.SourceRef:
     properties:
       id:
@@ -384,6 +453,17 @@ definitions:
       name:
         type: string
     type: object
+  domain.TokenPair:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      token_type:
+        type: string
+    type: object
   domain.UnitUpsert:
     properties:
       code:
@@ -392,6 +472,43 @@ definitions:
         type: string
       to_base_factor:
         type: string
+    type: object
+  domain.UpdateProfileInput:
+    properties:
+      display_name:
+        maxLength: 80
+        type: string
+      locale:
+        enum:
+        - fr
+        - en
+        type: string
+    type: object
+  domain.User:
+    properties:
+      created_at:
+        type: string
+      display_name:
+        type: string
+      email:
+        type: string
+      email_verified_at:
+        type: string
+      id:
+        type: string
+      locale:
+        type: string
+      reputation_score:
+        type: integer
+      role:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  httpapi.AuthResponse:
+    properties:
+      data:
+        $ref: '#/definitions/domain.AuthResult'
     type: object
   httpapi.BuildInfo:
     properties:
@@ -403,6 +520,15 @@ definitions:
         type: string
       version:
         type: string
+    type: object
+  httpapi.ContributionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Contribution'
+        type: array
+      meta:
+        $ref: '#/definitions/httpapi.PaginationMeta'
     type: object
   httpapi.PaginationMeta:
     properties:
@@ -459,6 +585,11 @@ definitions:
       status:
         type: string
     type: object
+  httpapi.UserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/domain.User'
+    type: object
 info:
   contact: {}
   description: |-
@@ -511,6 +642,122 @@ paths:
       summary: Consulter les utilisateurs en administration
       tags:
       - Administration
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Identifiants
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Ouvrir une session
+      tags:
+      - Authentification
+  /api/v1/auth/logout:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Jeton de rafraîchissement
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RefreshInput'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Révoquer la session
+      tags:
+      - Authentification
+  /api/v1/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Un jeton de rafraîchissement ne peut être utilisé qu'une seule
+        fois.
+      parameters:
+      - description: Jeton de rafraîchissement
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RefreshInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Renouveler les jetons
+      tags:
+      - Authentification
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Valide l'email, le mot de passe et la langue, puis retourne le
+        profil et deux jetons.
+      parameters:
+      - description: Inscription
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/httpapi.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Créer un compte et ouvrir une session
+      tags:
+      - Authentification
   /api/v1/categories:
     get:
       consumes:
@@ -1767,6 +2014,109 @@ paths:
       summary: Gérer les lieux
       tags:
       - Lieux
+  /api/v1/me:
+    delete:
+      description: Révoke les sessions et anonymise les données conservées à des fins
+        statistiques.
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Supprimer le compte
+      tags:
+      - Compte
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Lire le profil courant
+      tags:
+      - Compte
+    patch:
+      consumes:
+      - application/json
+      description: 'Les champs absents conservent leur valeur existante ; display_name:
+        null efface le nom.'
+      parameters:
+      - description: Champs à modifier
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateProfileInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Modifier le profil courant
+      tags:
+      - Compte
+  /api/v1/me/contributions:
+    get:
+      description: Retourne les prix produits et carburants soumis, quel que soit
+        leur statut.
+      parameters:
+      - default: 20
+        description: Nombre de résultats
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        description: Décalage
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ContributionsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Suivre ses contributions
+      tags:
+      - Compte
   /api/v1/merchants:
     get:
       consumes:
@@ -2961,4 +3311,9 @@ produces:
 schemes:
 - http
 - https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

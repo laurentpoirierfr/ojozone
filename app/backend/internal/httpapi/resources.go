@@ -29,27 +29,27 @@ func registerResourceRoutes(api *gin.RouterGroup, h *Handler) {
 	}
 	for _, resource := range resources {
 		api.GET("/"+resource.name, resource.handler)
-		api.POST("/"+resource.name, resource.handler)
+		api.POST("/"+resource.name, h.authenticate, requireRole(domain.RoleAdmin), resource.handler)
 		api.GET("/"+resource.name+"/:id", resource.handler)
-		api.PUT("/"+resource.name+"/:id", resource.handler)
-		api.DELETE("/"+resource.name+"/:id", resource.handler)
+		api.PUT("/"+resource.name+"/:id", h.authenticate, requireRole(domain.RoleAdmin), resource.handler)
+		api.DELETE("/"+resource.name+"/:id", h.authenticate, requireRole(domain.RoleAdmin), resource.handler)
 	}
 	api.GET("/units", h.units)
-	api.POST("/units", h.units)
+	api.POST("/units", h.authenticate, requireRole(domain.RoleAdmin), h.units)
 	api.GET("/units/:code", h.units)
-	api.PUT("/units/:code", h.units)
-	api.DELETE("/units/:code", h.units)
+	api.PUT("/units/:code", h.authenticate, requireRole(domain.RoleAdmin), h.units)
+	api.DELETE("/units/:code", h.authenticate, requireRole(domain.RoleAdmin), h.units)
 	aggregatePath := "/price-aggregates/:geo_area_id/:metric_type/:subject_id/:month"
 	api.GET("/price-aggregates", h.priceAggregates)
-	api.POST("/price-aggregates", h.priceAggregates)
+	api.POST("/price-aggregates", h.authenticate, requireRole(domain.RoleAdmin), h.priceAggregates)
 	api.GET(aggregatePath, h.priceAggregates)
-	api.PUT(aggregatePath, h.priceAggregates)
-	api.DELETE(aggregatePath, h.priceAggregates)
+	api.PUT(aggregatePath, h.authenticate, requireRole(domain.RoleAdmin), h.priceAggregates)
+	api.DELETE(aggregatePath, h.authenticate, requireRole(domain.RoleAdmin), h.priceAggregates)
 	api.GET("/moderation-events", h.moderationEvents)
-	api.POST("/moderation-events", h.moderationEvents)
+	api.POST("/moderation-events", h.authenticate, requireRole(domain.RoleModerator, domain.RoleAdmin), h.moderationEvents)
 	api.GET("/moderation-events/:id", h.moderationEvents)
-	api.GET("/admin/users", h.adminUsers)
-	api.GET("/admin/users/:id", h.adminUsers)
+	api.GET("/admin/users", h.authenticate, requireRole(domain.RoleAdmin), h.adminUsers)
+	api.GET("/admin/users/:id", h.authenticate, requireRole(domain.RoleAdmin), h.adminUsers)
 }
 
 func (h *Handler) handleResource(c *gin.Context, resource string) {

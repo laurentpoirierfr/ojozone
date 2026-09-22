@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -18,6 +19,17 @@ import (
 
 type Repository interface {
 	Ping(context.Context) error
+	CreateUser(context.Context, domain.RegisterInput, string) (domain.User, error)
+	GetUserByEmail(context.Context, string) (domain.UserWithPassword, error)
+	GetUserByID(context.Context, string) (domain.User, error)
+	UpdateUserProfile(context.Context, string, domain.UpdateProfileInput) (domain.User, error)
+	AnonymizeUser(context.Context, string) (domain.User, error)
+	CreateSession(context.Context, domain.Session) (domain.Session, error)
+	GetSessionByRefreshHash(context.Context, string) (domain.Session, error)
+	UpdateSessionRefresh(context.Context, string, string, time.Time) (domain.Session, error)
+	RevokeSession(context.Context, string) error
+	RevokeAllSessionsForUser(context.Context, string) error
+	ListMyContributions(context.Context, string, domain.Pagination) ([]domain.Contribution, error)
 	ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error)
 	GetProduct(context.Context, string) (domain.Product, error)
 	GetProductByBarcode(context.Context, string) (domain.Product, error)

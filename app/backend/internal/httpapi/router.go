@@ -31,6 +31,7 @@ type BuildInfo struct {
 type Handler struct {
 	service service.Service
 	info    BuildInfo
+	tokens  tokenParser
 }
 
 type Problem struct {
@@ -67,10 +68,10 @@ type ProductPriceResponse struct {
 	Data domain.ProductPrice `json:"data"`
 }
 
-func NewRouter(appService service.Service, staticFS fs.FS, info BuildInfo) *gin.Engine {
+func NewRouter(appService service.Service, manager tokenParser, staticFS fs.FS, info BuildInfo) *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
-	handler := &Handler{service: appService, info: info}
+	handler := &Handler{service: appService, info: info, tokens: manager}
 
 	ops := router.Group("/ops")
 	ops.GET("/liveness", handler.liveness)
@@ -78,18 +79,31 @@ func NewRouter(appService service.Service, staticFS fs.FS, info BuildInfo) *gin.
 	ops.GET("/infos", handler.infos)
 
 	api := router.Group("/api/v1")
+
+	authGroup := api.Group("/auth")
+	authGroup.POST("/register", handler.register)
+	authGroup.POST("/login", handler.login)
+	authGroup.POST("/refresh", handler.refresh)
+	authGroup.POST("/logout", handler.logout)
+
+	me := api.Group("/me", handler.authenticate)
+	me.GET("", handler.getMe)
+	me.PATCH("", handler.patchMe)
+	me.DELETE("", handler.deleteMe)
+	me.GET("/contributions", handler.listMyContributions)
+
 	api.GET("/products", handler.listProducts)
-	api.POST("/products", handler.upsertProduct)
+	api.POST("/products", handler.authenticate, requireRole(domain.RoleAdmin), handler.upsertProduct)
 	api.GET("/products/by-barcode/:barcode", handler.getProductByBarcode)
 	api.GET(productByIDRoute, handler.getProduct)
-	api.PUT(productByIDRoute, handler.replaceProduct)
-	api.DELETE(productByIDRoute, handler.deleteProduct)
+	api.PUT(productByIDRoute, handler.authenticate, requireRole(domain.RoleAdmin), handler.replaceProduct)
+	api.DELETE(productByIDRoute, handler.authenticate, requireRole(domain.RoleAdmin), handler.deleteProduct)
 	api.GET("/products/:id/prices", handler.listProductPrices)
 	api.GET("/product-prices", handler.listAllProductPrices)
-	api.POST("/product-prices", handler.upsertProductPrice)
+	api.POST("/product-prices", handler.authenticate, requireRole(domain.RoleAdmin), handler.upsertProductPrice)
 	api.GET(productPriceByIDRoute, handler.getProductPrice)
-	api.PUT(productPriceByIDRoute, handler.replaceProductPrice)
-	api.DELETE(productPriceByIDRoute, handler.deleteProductPrice)
+	api.PUT(productPriceByIDRoute, handler.authenticate, requireRole(domain.RoleAdmin), handler.replaceProductPrice)
+	api.DELETE(productPriceByIDRoute, handler.authenticate, requireRole(domain.RoleAdmin), handler.deleteProductPrice)
 	registerResourceRoutes(api, handler)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -467,6 +481,16 @@ func handleServiceError(c *gin.Context, err error, fallback string) {
 		writeProblem(c, http.StatusNotFound, "not_found", "Ressource introuvable.")
 	case errors.Is(err, domain.ErrConflict):
 		writeProblem(c, http.StatusConflict, "conflict", "La ressource entre en conflit avec des données existantes.")
+	case errors.Is(err, domain.ErrForbidden):
+		writeProblem(c, http.StatusForbidden, "forbidden", "Vos droits ne permettent pas cette opération.")
+	case errors.Is(err, domain.ErrUnauthorized):
+		writeProblem(c, http.StatusUnauthorized, "unauthorized", "Jeton invalide, expiré ou révoqué.")
+	case errors.Is(err, service.ErrInvalidCredentials):
+		writeProblem(c, http.StatusUnauthorized, "invalid_credentials", "Identifiants invalides.")
+	case errors.Is(err, service.ErrEmailAlreadyUsed):
+		writeProblem(c, http.StatusConflict, "email_already_used", "Un compte possède déjà cet email.")
+	case errors.Is(err, service.ErrInvalidProfile):
+		writeProblem(c, http.StatusBadRequest, "invalid_profile", err.Error())
 	case errors.Is(err, service.ErrInvalidID), errors.Is(err, service.ErrInvalidBarcode), errors.Is(err, service.ErrInvalidPagination), errors.Is(err, service.ErrInvalidProduct), errors.Is(err, service.ErrInvalidPrice), errors.Is(err, service.ErrInvalidResource):
 		writeProblem(c, http.StatusBadRequest, "invalid_request", err.Error())
 	default:

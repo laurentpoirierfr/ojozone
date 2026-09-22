@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/laurentpoirierfr/ojozone/internal/auth"
 	"github.com/laurentpoirierfr/ojozone/internal/domain"
 	"github.com/laurentpoirierfr/ojozone/internal/repository"
 )
@@ -39,6 +40,14 @@ var (
 // Service expose les opérations métier consommées par les handlers HTTP.
 type Service interface {
 	Readiness(context.Context) error
+	Register(context.Context, domain.RegisterInput) (domain.AuthResult, error)
+	Login(context.Context, domain.LoginInput) (domain.AuthResult, error)
+	Refresh(context.Context, domain.RefreshInput) (domain.AuthResult, error)
+	Logout(context.Context, domain.RefreshInput) error
+	GetMe(context.Context, string) (domain.User, error)
+	UpdateMe(context.Context, string, domain.UpdateProfileInput) (domain.User, error)
+	DeleteMe(context.Context, string) error
+	ListMyContributions(context.Context, string, domain.Pagination) ([]domain.Contribution, error)
 	ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error)
 	GetProduct(context.Context, string) (domain.Product, error)
 	GetProductByBarcode(context.Context, string) (domain.Product, error)
@@ -61,11 +70,12 @@ type Service interface {
 // OjoZone implémente les règles métier et délègue la persistance au repository.
 type OjoZone struct {
 	repository repository.Repository
+	auth       *auth.Manager
 }
 
 // New construit le service métier OjoZone.
-func New(repository repository.Repository) *OjoZone {
-	return &OjoZone{repository: repository}
+func New(repository repository.Repository, manager *auth.Manager) *OjoZone {
+	return &OjoZone{repository: repository, auth: manager}
 }
 
 // Readiness vérifie que les dépendances indispensables sont disponibles.
