@@ -98,18 +98,52 @@ type AuthResult struct {
 
 // Contribution est une soumission de l'utilisateur courant.
 type Contribution struct {
-	ID            string  `json:"id"`
-	Kind          string  `json:"kind"`
-	Name          string  `json:"name"`
-	Amount        string  `json:"amount"`
-	Currency      string  `json:"currency"`
-	Quantity      string  `json:"quantity"`
-	UnitCode      string  `json:"unit_code"`
-	ObservedAt    string  `json:"observed_at"`
-	Status        string  `json:"status"`
-	SourceID      string  `json:"source_id"`
-	ModeratedAt   *string `json:"moderated_at"`
-	ModeratorNote *string `json:"moderator_note"`
+	ID              string    `json:"id"`
+	Type            string    `json:"type"`
+	Status          string    `json:"status"`
+	ObservedAt      time.Time `json:"observed_at"`
+	CreatedAt       time.Time `json:"created_at"`
+	Currency        string    `json:"currency"`
+	Amount          string    `json:"amount"`
+	Quantity        *string   `json:"quantity"`
+	UnitCode        *string   `json:"unit_code"`
+	IsPromotion     *bool     `json:"is_promotion"`
+	ConfidenceScore *string   `json:"confidence_score"`
+	Subject         string    `json:"subject"`
+	Location        EntityRef `json:"location"`
+	GeoArea         EntityRef `json:"geo_area"`
+	Source          SourceRef `json:"source"`
+}
+
+// EntityRef est une reference nommee vers un lieu ou une zone.
+type EntityRef struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// SourceRef est une reference nommee vers une source.
+type SourceRef struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	Kind string `json:"kind"`
+}
+
+// ContributionCheck nomme un controle passe par la soumission.
+type ContributionCheck struct {
+	Code string `json:"code"`
+}
+
+// ContributionResult est le statut renvoye apres une soumission (202).
+type ContributionResult struct {
+	ID     string              `json:"id"`
+	Status string              `json:"status"`
+	Checks []ContributionCheck `json:"checks"`
+}
+
+// ContributionDetail ajoute l'auteur a une contribution (proprietaire ou moderation).
+type ContributionDetail struct {
+	Contribution
+	ContributorID string `json:"contributor_id"`
 }
 
 // Product est un produit du catalogue.

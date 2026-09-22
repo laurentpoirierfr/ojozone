@@ -74,7 +74,13 @@ INSERT INTO geo_areas (id, type, code, name, country_code) VALUES
 ON CONFLICT DO NOTHING;
 
 INSERT INTO sources (id, name, kind, is_active) VALUES
-    ('0cbdc6bf-361b-4878-b407-e77f735098af', 'Source d''integration', 'official', true)
+    ('0cbdc6bf-361b-4878-b407-e77f735098af', 'Source d''integration', 'official', true),
+    ('a1b2c3d4-5e6f-4a8b-9c0d-1e2f3a4b5c6d', 'Contribution citoyenne', 'community', true)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO fuel_types (id, code, name_i18n, energy) VALUES
+    ('b25fbc0e-9d7a-4d2e-bf5f-7d2a1f0a3c92', 'SP95-E10',
+     '{"fr":"Sans plomb 95 - E10","en":"Unleaded 95 - E10"}', 'petrol')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO categories (id, slug, name_i18n) VALUES

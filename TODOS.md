@@ -36,7 +36,7 @@
 - [~] Authentification par mot de passe : inscription, connexion, renouvellement et révocation (jetons JWT + refresh opaques avec rotation). OIDC/OAuth 2.1 en évolution possible.
 - [x] Appliquer les rôles membre, modérateur, administrateur et partenaire.
 - [x] Protéger toutes les écritures et les routes `/api/v1/admin/*`.
-- [ ] Ajouter les contributions produit et carburant avec statut `pending` (lecture du profil disponible via `/api/v1/me/contributions`).
+- [x] Ajouter les contributions produit et carburant avec statut `pending` (soumission 202, consultation, correction et retrait du propriétaire ; suivi via `/api/v1/me/contributions`).
 - [ ] Ajouter Cloudflare R2 et les URLs signées pour les preuves photo.
 - [ ] Implémenter la file de modération.
 - [ ] Ajouter quotas, limitation de débit et protection anti-abus.
@@ -139,14 +139,14 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 
 - [~] Validation métier : règles principales présentes, mais couverture à compléter pour toutes les ressources génériques.
 - [~] Tests unitaires : handlers et règles d'upsert principales couverts, ainsi que le parcours d'authentification, mais pas chaque ressource.
-- [x] Tests d'intégration : suite `tests/` automatisée contre PostgreSQL réel via `make test-integration` (parcours auth, produits, rôles et erreurs `problem+json` couverts).
+- [x] Tests d'intégration : suite `tests/` automatisée contre PostgreSQL réel via `make test-integration` (parcours auth, produits, rôles, erreurs `problem+json` et contributions couverts).
 - [~] Pagination : `limit/offset` disponible ; le curseur prévu dans les spécifications reste à implémenter.
 
 ### À faire
 
 - [ ] Ajouter l'authentification OIDC/OAuth 2.1 (ex. « Continuer avec Google ») et la réinitialisation de mot de passe.
 - [ ] Activer la vérification d'e-mail et les parcours de compte associés.
-- [ ] Ajouter les contributions produit et carburant (soumission avec statut `pending`) et leur suivi.
+- [x] Ajouter les contributions produit et carburant (soumission avec statut `pending`) et leur suivi (correction et retrait par le propriétaire).
 - [ ] Ajouter des DTO et validations dédiés à chaque ressource au lieu de réponses génériques lorsque nécessaire.
 - [ ] Documenter dans Swagger tous les paramètres de chemin des ressources génériques.
 - [ ] Ajouter des filtres métier : période, zone, statut, source et fraîcheur.
@@ -195,7 +195,7 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 
 - [x] Authentification : inscription, connexion, renouvellement et révocation.
 - [x] Profil courant : `GET/PATCH/DELETE /api/v1/me`.
-- [~] Contributions de l'utilisateur courant : liste et statut disponibles, soumission avec statut `pending` à venir.
+- [x] Contributions de l'utilisateur courant : soumission produit/carburant avec statut `pending`, consultation, correction et retrait, et suivi via le profil.
 - [ ] Signalement d'une observation.
 - [ ] Recherche géographique de proximité.
 - [ ] Historique agrégé produits, carburants, immobilier et revenus.
@@ -278,7 +278,7 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 
 ### À faire
 
-- [ ] Ajouter une CI GitHub Actions : génération, diff propre, lint, tests et build, puis `make test-integration`.
+- [x] Ajouter une CI GitHub Actions : génération, diff propre, lint, tests et build, puis `make test-integration` (`.github/workflows/ci.yml`, poussée sur `origin/develop`).
 - [ ] Ajouter des tests d'intégration reproductibles avec PostgreSQL/PostGIS en conteneur.
 - [ ] Vérifier automatiquement que sqlc et Swagger sont à jour.
 - [ ] Ajouter un linter Go et une analyse de vulnérabilités des dépendances.

@@ -78,6 +78,7 @@ SELECT
     o.currency,
     o.quantity,
     o.unit_code,
+    o.is_promotion,
     o.observed_at,
     o.status,
     o.confidence_score,

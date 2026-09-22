@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    name: Backend (génération, format, vet, tests, build)
+    runs-on: ubuntu-latest
+    env:
+      SQLC_VERSION: v1.31.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: app/backend/go.mod
+          cache-dependency-path: app/backend/go.sum
+
+      - name: Installer sqlc
+        run: |
+          curl -fsSL -o /tmp/sqlc.tgz \
+            "https://github.com/sqlc-dev/sqlc/releases/download/${SQLC_VERSION}/sqlc_${SQLC_VERSION#v}_linux_amd64.tar.gz"
+          tar -xzf /tmp/sqlc.tgz -C /usr/local/bin sqlc
+          sqlc version
+
+      - name: Installer swag
+        run: |
+          go install github.com/swaggo/swag/cmd/swag@v1.16.4
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Valider le backend (sqlc, swagger, fmt, vet, tests)
+        run: make -C app/backend check
+
+      - name: Vérifier qu'aucun artefact généré n'a divergé
+        run: git diff --exit-code
+
+      - name: Compiler le binaire du serveur
+        run: make -C app/backend build
+
+  integration:
+    name: Intégration (API + PostgreSQL/PostGIS réel)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: app/backend/go.mod
+          cache-dependency-path: app/backend/go.sum
+
+      - name: Lancer la suite d'intégration
+        run: make test-integration

@@ -108,6 +108,7 @@ type Contribution struct {
 	Amount          string    `json:"amount"`
 	Quantity        *string   `json:"quantity,omitempty"`
 	UnitCode        *string   `json:"unit_code,omitempty"`
+	IsPromotion     *bool     `json:"is_promotion,omitempty"`
 	ConfidenceScore *string   `json:"confidence_score,omitempty"`
 	Subject         string    `json:"subject"`
 	Location        EntityRef `json:"location"`

@@ -112,9 +112,15 @@ go run /tmp/hash.go
 
 ## CI
 
-Ces tests peuvent s'exécuter tels quels dans une GitHub Actions : l'étape de CI
-n'a qu'à appeler `make test-integration`. Le conteneur PostgreSQL et l'API sont
-gérés par `scripts/run.sh`, aucun service annexe n'est requis.
+Le workflow `.github/workflows/ci.yml` déclenche deux jobs sur chaque push et
+pull request :
+
+1. `backend` : installe sqlc v1.31.0 et swag v1.16.4, puis `make check`
+   (génération, format, vet, tests) et vérifie qu'aucun artefact généré n'a
+   divergé, puis compile le serveur.
+2. `integration` : appelle `make test-integration` directement. Le conteneur
+   PostgreSQL et l'API sont gérés par `scripts/run.sh`, aucun service annexe
+   n'est requis.
 
 ## Diagnostic
 
