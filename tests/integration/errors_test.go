@@ -82,20 +82,15 @@ func TestAdminUsersRouteIsRoleProtected(t *testing.T) {
 
 func TestModerationEventsRequiresModeratorOrAdmin(t *testing.T) {
 	member := registerMember(t)
-	payload := map[string]any{
-		"observation_type": "product_price",
-		"observation_id":   "00000000-0000-0000-0000-000000000000",
-		"new_status":       "rejected",
-		"reason_code":      "test",
-		"note":             "validation e2e",
-	}
-	var wrapper api.Result
-	response, err := client.Do(context.Background(), http.MethodPost, "/api/v1/moderation-events", member.Tokens.AccessToken, payload, &wrapper)
+	payload := []byte(`{"observation_type":"product_price","observation_id":"00000000-0000-0000-0000-000000000000","new_status":"rejected","reason_code":"test","note":"validation e2e"}`)
+	response, err := client.Raw(context.Background(), http.MethodPost, "/api/v1/moderation-events", member.Tokens.AccessToken, payload)
 	if err != nil {
 		t.Fatalf("transport : %v", err)
 	}
 	var problem api.Problem
-	_ = wrapper.DecodeData(&problem)
+	if err := decodeJSON(response, &problem); err != nil {
+		t.Fatalf("decodage problem : %v", err)
+	}
 	if response.StatusCode != http.StatusForbidden {
 		t.Fatalf("statut obtenu %d, attendu %d (member interdit de moderer)", response.StatusCode, http.StatusForbidden)
 	}

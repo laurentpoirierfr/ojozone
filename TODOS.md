@@ -139,7 +139,7 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 
 - [~] Validation métier : règles principales présentes, mais couverture à compléter pour toutes les ressources génériques.
 - [~] Tests unitaires : handlers et règles d'upsert principales couverts, ainsi que le parcours d'authentification, mais pas chaque ressource.
-- [~] Tests d'intégration : scénarios manuels validés contre PostgreSQL, mais non automatisés en CI.
+- [x] Tests d'intégration : suite `tests/` automatisée contre PostgreSQL réel via `make test-integration` (parcours auth, produits, rôles et erreurs `problem+json` couverts).
 - [~] Pagination : `limit/offset` disponible ; le curseur prévu dans les spécifications reste à implémenter.
 
 ### À faire
@@ -274,10 +274,11 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 - [x] Vérifier les migrations sur PostgreSQL/PostGIS réel.
 - [x] Vérifier plusieurs parcours CRUD/upsert contre la base locale.
 - [x] Protéger les secrets locaux avec `.gitignore`.
+- [x] Créer la suite d'intégration `tests/` : module Go indépendant, base dédiée `ojozone_test`, migrations et fixtures, client HTTP typé, exécution reproductible via `make test-integration` (voir `tests/README.md`).
 
 ### À faire
 
-- [ ] Ajouter une CI GitHub Actions : génération, diff propre, lint, tests et build.
+- [ ] Ajouter une CI GitHub Actions : génération, diff propre, lint, tests et build, puis `make test-integration`.
 - [ ] Ajouter des tests d'intégration reproductibles avec PostgreSQL/PostGIS en conteneur.
 - [ ] Vérifier automatiquement que sqlc et Swagger sont à jour.
 - [ ] Ajouter un linter Go et une analyse de vulnérabilités des dépendances.

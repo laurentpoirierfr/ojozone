@@ -9,7 +9,7 @@ DOMAIN_MODEL ?= assets/domain-model.puml
 DOMAIN_MODEL_PNG ?= assets/domain-model.png
 PLANTUML_IMAGE ?= docker.io/plantuml/plantuml:1.2026.6
 
-.PHONY: help up db-up db-ready down restart ps logs migrate migrate-down migrate-version migration-new reset domain-model domain-model-source domain-model-png
+.PHONY: help up db-up db-ready down restart ps logs migrate migrate-down migrate-version migration-new reset domain-model domain-model-source domain-model-png test-integration
 
 help: ## Afficher les commandes disponibles
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "%-20s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -72,3 +72,6 @@ domain-model-png: domain-model-source ## Transformer le modèle PlantUML en PNG
 reset: ## Supprimer les données locales et recréer le schéma
 	$(COMPOSE) down -v
 	$(MAKE) up
+
+test-integration: ## Lancer les tests d'intégration API (docker/podman requis)
+	$(MAKE) -C tests check

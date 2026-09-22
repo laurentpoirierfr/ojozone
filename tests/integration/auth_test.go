@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -24,13 +25,14 @@ func TestRegisterCreatesMemberAccount(t *testing.T) {
 }
 
 func TestRegisterNormalizesEmailToLowercase(t *testing.T) {
-	result, problem, err := client.Register(context.Background(), uniqueEmail("CaSe"), "mot-de-passe-123", "fr")
+	email := uniqueEmail("CaSe")
+	result, problem, err := client.Register(context.Background(), email, "mot-de-passe-123", "fr")
 	if err != nil {
 		t.Fatalf("transport : %v", err)
 	}
 	requireNoProblem(t, problem, "inscription")
-	if result.User.Email != "case" {
-		t.Fatalf("email non normalise : %q", result.User.Email)
+	if result.User.Email != strings.ToLower(email) {
+		t.Fatalf("email non normalise : %q, attendu %q", result.User.Email, strings.ToLower(email))
 	}
 }
 
@@ -214,7 +216,7 @@ func TestDeleteMeAnonymizesAndRevokesAccess(t *testing.T) {
 	}
 	requireNoProblem(t, problem, "suppression")
 
-	_, problem, err = client.Me(context.Background(), registered.Tokens.AccessToken)
+	_, problem, err = client.Refresh(context.Background(), registered.Tokens.RefreshToken)
 	if err != nil {
 		t.Fatalf("transport : %v", err)
 	}

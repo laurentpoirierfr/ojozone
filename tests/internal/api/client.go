@@ -13,11 +13,6 @@ import (
 	"time"
 )
 
-// bytesReader adapte un corps brut en io.Reader.
-func bytesReader(body []byte) *bytes.Reader {
-	return bytes.NewReader(body)
-}
-
 // Client est un client HTTP minimal vers l'API OjoZone.
 type Client struct {
 	BaseURL string
@@ -32,10 +27,23 @@ func New(baseURL string) *Client {
 	}
 }
 
-// Result est l'enveloppe standard des reponses metier.
+// bytesReader adapte un corps brut en io.Reader.
+func bytesReader(body []byte) *bytes.Reader {
+	return bytes.NewReader(body)
+}
+
+// Result est l'enveloppe standard des reponses metier a succes.
 type Result struct {
 	Data json.RawMessage `json:"data"`
 	Meta *PaginationMeta `json:"meta,omitempty"`
+}
+
+// DecodeData extrait le champ data d'une reponse a succes.
+func (r *Result) DecodeData(target any) error {
+	if len(r.Data) == 0 {
+		return nil
+	}
+	return json.Unmarshal(r.Data, target)
 }
 
 // PaginationMeta est la pagination renvoyee par les listes.
@@ -44,7 +52,8 @@ type PaginationMeta struct {
 	Offset int32 `json:"offset"`
 }
 
-// Problem est la representation JSON de type application/problem+json.
+// Problem est la representation JSON de type application/problem+json
+// renvoyee pour toutes les reponses d'erreur.
 type Problem struct {
 	Type   string `json:"type"`
 	Title  string `json:"title"`
@@ -132,59 +141,75 @@ type ProductPrice struct {
 	SourceRecordID   *string `json:"source_record_id"`
 }
 
-// Do execute une requete, serialise body si non nul et decode out si fourni.
-func (c *Client) Do(ctx context.Context, method, path, token string, body, out any) (*http.Response, error) {
+// send construit la requete HTTP et la transmet sans fermer le corps.
+func (c *Client) send(ctx context.Context, method, path, token string, payload any) (*http.Response, error) {
 	var reader io.Reader
-	if body != nil {
-		payload, err := json.Marshal(body)
+	if payload != nil {
+		encoded, err := json.Marshal(payload)
 		if err != nil {
 			return nil, fmt.Errorf("serialisation de la requete : %w", err)
 		}
-		reader = bytes.NewReader(payload)
+		reader = bytes.NewReader(encoded)
 	}
 	request, err := http.NewRequestWithContext(ctx, method, c.BaseURL+path, reader)
 	if err != nil {
 		return nil, err
 	}
-	if body != nil {
+	if payload != nil {
 		request.Header.Set("Content-Type", "application/json")
 	}
 	if token != "" {
 		request.Header.Set("Authorization", "Bearer "+token)
 	}
-	response, err := c.HTTP.Do(request)
-	if err != nil {
-		return response, err
-	}
-	defer response.Body.Close()
-	if out == nil {
-		return response, nil
-	}
-	if err := json.NewDecoder(response.Body).Decode(out); err != nil {
-		return response, fmt.Errorf("decodage de la reponse %s: %w", path, err)
-	}
-	return response, nil
+	return c.HTTP.Do(request)
 }
 
-// DecodeData extrait le champ data d'une reponse du schema {"data": ...}.
-func (r *Result) DecodeData(target any) error {
-	return json.Unmarshal(r.Data, target)
-}
-
-// decodeOutcome decode une reponse : 2xx rend nil, sinon un Problem source JSON.
-func decodeOutcome(response *http.Response, wrapper *Result) (*Problem, error) {
-	if response.StatusCode >= 200 && response.StatusCode < 300 {
-		return nil, nil
-	}
+// parseProblem decode un corps d'erreur en Problem avec le statut HTTP en secours.
+func (c *Client) parseProblem(raw []byte, status int, path string) (*Problem, error) {
 	var problem Problem
-	if err := wrapper.DecodeData(&problem); err != nil {
-		return nil, nil
+	if len(raw) > 0 {
+		if err := json.Unmarshal(raw, &problem); err != nil {
+			return nil, fmt.Errorf("decodage de l'erreur %s: %w", path, err)
+		}
 	}
 	if problem.Status == 0 {
-		problem.Status = response.StatusCode
+		problem.Status = status
+	}
+	if problem.Title == "" {
+		problem.Title = http.StatusText(status)
 	}
 	if problem.Type == "" {
-		problem.Type = http.StatusText(response.StatusCode)
+		problem.Type = http.StatusText(status)
 	}
 	return &problem, nil
+}
+
+// fetch s'attend a une reponse du schema {"data": ...} en cas de succes et
+// decodera dataTarget ; toute reponse d'erreur est decodee en Problem avec le
+// code HTTP en secours. Une reponse sans corps (204) est acceptee.
+func (c *Client) fetch(ctx context.Context, method, path, token string, payload, dataTarget any) (*Problem, error) {
+	response, err := c.send(ctx, method, path, token, payload)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	raw, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	if response.StatusCode >= 200 && response.StatusCode < 300 {
+		if len(raw) == 0 {
+			return nil, nil
+		}
+		var wrapper Result
+		if err := json.Unmarshal(raw, &wrapper); err != nil {
+			return nil, fmt.Errorf("decodage de la reponse %s: %w", path, err)
+		}
+		if err := wrapper.DecodeData(dataTarget); err != nil {
+			return nil, fmt.Errorf("decodage du champ data de %s: %w", path, err)
+		}
+		return nil, nil
+	}
+	return c.parseProblem(raw, response.StatusCode, path)
 }
