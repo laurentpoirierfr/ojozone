@@ -1,0 +1,417 @@
+@startuml
+title OjoZone domain model
+namespace domain {
+    class "AdminUser" << (S,Aquamarine) >> {
+        + ID string
+        + Email string
+        + DisplayName *string
+        + Role string
+        + Locale string
+        + ReputationScore int32
+        + EmailVerifiedAt *time.Time
+        + CreatedAt time.Time
+        + UpdatedAt time.Time
+        + DeletedAt *time.Time
+
+    }
+    class "Category" << (S,Aquamarine) >> {
+        + ID string
+        + ParentID *string
+        + Slug string
+        + NameI18n json.RawMessage
+
+    }
+    class "CategoryUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + ParentID *string
+        + Slug string
+        + NameI18n json.RawMessage
+
+    }
+    class "EntityRef" << (S,Aquamarine) >> {
+        + ID string
+        + Name string
+        + Address *string
+
+    }
+    class "EvidenceFile" << (S,Aquamarine) >> {
+        + ID string
+        + ObservationType string
+        + ObservationID string
+        + ObjectKey string
+        + MediaType string
+        + SHA256 string
+        + UploadedBy *string
+        + CreatedAt time.Time
+
+    }
+    class "EvidenceUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + ObservationType string
+        + ObservationID string
+        + ObjectKey string
+        + MediaType string
+        + SHA256 string
+        + UploadedBy *string
+
+    }
+    class "FuelPrice" << (S,Aquamarine) >> {
+        + ID string
+        + FuelTypeID string
+        + LocationID string
+        + SourceID string
+        + ContributorID *string
+        + AmountPerLitre string
+        + Currency string
+        + ObservedAt time.Time
+        + Status string
+        + ConfidenceScore *string
+        + SourceRecordID *string
+        + CreatedAt time.Time
+
+    }
+    class "FuelPriceUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + FuelTypeID string
+        + LocationID string
+        + SourceID string
+        + ContributorID *string
+        + AmountPerLitre string
+        + Currency string
+        + ObservedAt time.Time
+        + Status string
+        + ConfidenceScore *string
+        + SourceRecordID *string
+
+    }
+    class "FuelType" << (S,Aquamarine) >> {
+        + ID string
+        + Code string
+        + NameI18n json.RawMessage
+        + Energy string
+
+    }
+    class "FuelTypeUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + Code string
+        + NameI18n json.RawMessage
+        + Energy string
+
+    }
+    class "GeoArea" << (S,Aquamarine) >> {
+        + ID string
+        + ParentID *string
+        + Type string
+        + Code *string
+        + Name string
+        + CountryCode string
+        + Latitude *float64
+        + Longitude *float64
+
+    }
+    class "GeoAreaUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + ParentID *string
+        + Type string
+        + Code *string
+        + Name string
+        + CountryCode string
+        + Latitude *float64
+        + Longitude *float64
+
+    }
+    class "HousingObservation" << (S,Aquamarine) >> {
+        + ID string
+        + GeoAreaID string
+        + SourceID string
+        + TransactionType string
+        + PropertyType string
+        + Rooms *int16
+        + Furnished *bool
+        + Amount string
+        + AmountPerSqm *string
+        + Currency string
+        + SurfaceSqm *string
+        + ObservedAt time.Time
+        + Status string
+        + SourceRecordID *string
+        + CreatedAt time.Time
+
+    }
+    class "HousingUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + GeoAreaID string
+        + SourceID string
+        + TransactionType string
+        + PropertyType string
+        + Rooms *int16
+        + Furnished *bool
+        + Amount string
+        + AmountPerSqm *string
+        + Currency string
+        + SurfaceSqm *string
+        + ObservedAt time.Time
+        + Status string
+        + SourceRecordID *string
+
+    }
+    class "IncomeObservation" << (S,Aquamarine) >> {
+        + ID string
+        + GeoAreaID string
+        + SourceID string
+        + OccupationCode *string
+        + IndustryCode *string
+        + Amount string
+        + Currency string
+        + Period string
+        + Basis string
+        + Statistic string
+        + SampleSize *int32
+        + PeriodStart string
+        + PeriodEnd string
+        + Status string
+        + SourceRecordID *string
+        + CreatedAt time.Time
+
+    }
+    class "IncomeUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + GeoAreaID string
+        + SourceID string
+        + OccupationCode *string
+        + IndustryCode *string
+        + Amount string
+        + Currency string
+        + Period string
+        + Basis string
+        + Statistic string
+        + SampleSize *int32
+        + PeriodStart string
+        + PeriodEnd string
+        + Status string
+        + SourceRecordID *string
+
+    }
+    class "Location" << (S,Aquamarine) >> {
+        + ID string
+        + MerchantID *string
+        + GeoAreaID string
+        + Name string
+        + Address *string
+        + Latitude *float64
+        + Longitude *float64
+        + ExternalRef *string
+        + CreatedAt time.Time
+
+    }
+    class "LocationUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + MerchantID *string
+        + GeoAreaID string
+        + Name string
+        + Address *string
+        + Latitude *float64
+        + Longitude *float64
+        + ExternalRef *string
+
+    }
+    class "Merchant" << (S,Aquamarine) >> {
+        + ID string
+        + Name string
+        + WebsiteURL *string
+        + CreatedAt time.Time
+
+    }
+    class "MerchantUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + Name string
+        + WebsiteURL *string
+
+    }
+    class "ModerationEvent" << (S,Aquamarine) >> {
+        + ID string
+        + ObservationType string
+        + ObservationID string
+        + ModeratorID *string
+        + PreviousStatus *string
+        + NewStatus string
+        + ReasonCode *string
+        + Note *string
+        + CreatedAt time.Time
+
+    }
+    class "ModerationEventAppend" << (S,Aquamarine) >> {
+        + ObservationType string
+        + ObservationID string
+        + ModeratorID *string
+        + PreviousStatus *string
+        + NewStatus string
+        + ReasonCode *string
+        + Note *string
+
+    }
+    class "Pagination" << (S,Aquamarine) >> {
+        + Limit int32
+
+    }
+    class "PriceAggregate" << (S,Aquamarine) >> {
+        + GeoAreaID string
+        + MetricType string
+        + SubjectID string
+        + Month string
+        + MedianAmount string
+        + MinAmount string
+        + MaxAmount string
+        + SampleSize int32
+        + ConfidenceScore string
+        + CalculatedAt time.Time
+
+    }
+    class "PriceFilter" << (S,Aquamarine) >> {
+        + ProductID string
+        + GeoAreaID string
+        + Status string
+        + Limit int32
+        + Offset int32
+
+    }
+    class "Product" << (S,Aquamarine) >> {
+        + ID string
+        + Name string
+        + Brand *string
+        + Barcode *string
+        + ReferenceUnit string
+        + IsGeneric bool
+        + Attributes json.RawMessage
+        + CategorySlug string
+        + CategoryNameI18n json.RawMessage
+        + CreatedAt time.Time
+
+    }
+    class "ProductFilter" << (S,Aquamarine) >> {
+        + Search string
+        + Limit int32
+        + Offset int32
+
+    }
+    class "ProductPrice" << (S,Aquamarine) >> {
+        + ID string
+        + ProductID string
+        + Amount string
+        + Currency string
+        + Quantity string
+        + UnitCode string
+        + NormalizedAmount string
+        + IsPromotion bool
+        + ObservedAt time.Time
+        + Status string
+        + ConfidenceScore *string
+        + SourceRecordID *string
+        + Location EntityRef
+        + GeoArea EntityRef
+        + Source SourceRef
+
+    }
+    class "ProductPriceUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + ProductID string
+        + LocationID string
+        + SourceID string
+        + ContributorID *string
+        + Amount string
+        + Currency string
+        + Quantity string
+        + UnitCode string
+        + NormalizedAmount string
+        + IsPromotion bool
+        + ObservedAt time.Time
+        + Status string
+        + ConfidenceScore *string
+        + SourceRecordID *string
+
+    }
+    class "ProductUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + CategoryID string
+        + Name string
+        + Brand *string
+        + Barcode *string
+        + ReferenceUnit string
+        + IsGeneric bool
+        + Attributes json.RawMessage
+
+    }
+    class "ResourceKey" << (S,Aquamarine) >> {
+        + ID string
+
+    }
+    class "Source" << (S,Aquamarine) >> {
+        + ID string
+        + Name string
+        + Kind string
+        + HomepageURL *string
+        + LicenseName *string
+        + LicenseURL *string
+        + Attribution *string
+        + IsActive bool
+        + CreatedAt time.Time
+
+    }
+    class "SourceRef" << (S,Aquamarine) >> {
+        + ID string
+        + Name string
+        + Kind string
+
+    }
+    class "SourceUpsert" << (S,Aquamarine) >> {
+        + ID string
+        + Name string
+        + Kind string
+        + HomepageURL *string
+        + LicenseName *string
+        + LicenseURL *string
+        + Attribution *string
+        + IsActive bool
+
+    }
+    class "Unit" << (S,Aquamarine) >> {
+        + Code string
+        + Dimension string
+        + ToBaseFactor string
+
+    }
+    class "domain.PriceAggregateUpsert" << (T, #FF7700) >>  {
+    }
+    class "domain.UnitUpsert" << (T, #FF7700) >>  {
+    }
+}
+"domain.PriceAggregate" #.. "alias of""domain.PriceAggregateUpsert"
+"domain.Unit" #.. "alias of""domain.UnitUpsert"
+
+
+"domain.AdminUser""uses" o-- "time.Time"
+"domain.Category""uses" o-- "json.RawMessage"
+"domain.CategoryUpsert""uses" o-- "json.RawMessage"
+"domain.EvidenceFile""uses" o-- "time.Time"
+"domain.FuelPrice""uses" o-- "time.Time"
+"domain.FuelPriceUpsert""uses" o-- "time.Time"
+"domain.FuelType""uses" o-- "json.RawMessage"
+"domain.FuelTypeUpsert""uses" o-- "json.RawMessage"
+"domain.HousingObservation""uses" o-- "time.Time"
+"domain.HousingUpsert""uses" o-- "time.Time"
+"domain.IncomeObservation""uses" o-- "time.Time"
+"domain.Location""uses" o-- "time.Time"
+"domain.Merchant""uses" o-- "time.Time"
+"domain.ModerationEvent""uses" o-- "time.Time"
+"domain.PriceAggregate""uses" o-- "time.Time"
+"domain.Product""uses" o-- "json.RawMessage"
+"domain.Product""uses" o-- "time.Time"
+"domain.ProductPrice""uses" o-- "domain.EntityRef"
+"domain.ProductPrice""uses" o-- "domain.SourceRef"
+"domain.ProductPrice""uses" o-- "time.Time"
+"domain.ProductPriceUpsert""uses" o-- "time.Time"
+"domain.ProductUpsert""uses" o-- "json.RawMessage"
+"domain.Source""uses" o-- "time.Time"
+
+
+@enduml

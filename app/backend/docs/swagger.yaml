@@ -1,0 +1,2964 @@
+basePath: /
+definitions:
+  domain.CategoryUpsert:
+    properties:
+      id:
+        type: string
+      name_i18n:
+        type: object
+      parent_id:
+        type: string
+      slug:
+        type: string
+    type: object
+  domain.EntityRef:
+    properties:
+      address:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  domain.EvidenceUpsert:
+    properties:
+      id:
+        type: string
+      media_type:
+        type: string
+      object_key:
+        type: string
+      observation_id:
+        type: string
+      observation_type:
+        type: string
+      sha256:
+        type: string
+      uploaded_by:
+        type: string
+    type: object
+  domain.FuelPriceUpsert:
+    properties:
+      amount_per_litre:
+        type: string
+      confidence_score:
+        type: string
+      contributor_id:
+        type: string
+      currency:
+        type: string
+      fuel_type_id:
+        type: string
+      id:
+        type: string
+      location_id:
+        type: string
+      observed_at:
+        type: string
+      source_id:
+        type: string
+      source_record_id:
+        type: string
+      status:
+        type: string
+    type: object
+  domain.FuelTypeUpsert:
+    properties:
+      code:
+        type: string
+      energy:
+        type: string
+      id:
+        type: string
+      name_i18n:
+        type: object
+    type: object
+  domain.GeoAreaUpsert:
+    properties:
+      code:
+        type: string
+      country_code:
+        type: string
+      id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      parent_id:
+        type: string
+      type:
+        type: string
+    type: object
+  domain.HousingUpsert:
+    properties:
+      amount:
+        type: string
+      amount_per_sqm:
+        type: string
+      currency:
+        type: string
+      furnished:
+        type: boolean
+      geo_area_id:
+        type: string
+      id:
+        type: string
+      observed_at:
+        type: string
+      property_type:
+        type: string
+      rooms:
+        type: integer
+      source_id:
+        type: string
+      source_record_id:
+        type: string
+      status:
+        type: string
+      surface_sqm:
+        type: string
+      transaction_type:
+        type: string
+    type: object
+  domain.IncomeUpsert:
+    properties:
+      amount:
+        type: string
+      basis:
+        type: string
+      currency:
+        type: string
+      geo_area_id:
+        type: string
+      id:
+        type: string
+      industry_code:
+        type: string
+      occupation_code:
+        type: string
+      period:
+        type: string
+      period_end:
+        type: string
+      period_start:
+        type: string
+      sample_size:
+        type: integer
+      source_id:
+        type: string
+      source_record_id:
+        type: string
+      statistic:
+        type: string
+      status:
+        type: string
+    type: object
+  domain.LocationUpsert:
+    properties:
+      address:
+        type: string
+      external_ref:
+        type: string
+      geo_area_id:
+        type: string
+      id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      merchant_id:
+        type: string
+      name:
+        type: string
+    type: object
+  domain.MerchantUpsert:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      website_url:
+        type: string
+    type: object
+  domain.ModerationEventAppend:
+    properties:
+      moderator_id:
+        type: string
+      new_status:
+        type: string
+      note:
+        type: string
+      observation_id:
+        type: string
+      observation_type:
+        type: string
+      previous_status:
+        type: string
+      reason_code:
+        type: string
+    type: object
+  domain.PriceAggregateUpsert:
+    properties:
+      calculated_at:
+        type: string
+      confidence_score:
+        type: string
+      geo_area_id:
+        type: string
+      max_amount:
+        type: string
+      median_amount:
+        type: string
+      metric_type:
+        type: string
+      min_amount:
+        type: string
+      month:
+        type: string
+      sample_size:
+        type: integer
+      subject_id:
+        type: string
+    type: object
+  domain.Product:
+    properties:
+      attributes:
+        type: object
+      barcode:
+        type: string
+      brand:
+        type: string
+      category_name_i18n:
+        type: object
+      category_slug:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      is_generic:
+        type: boolean
+      name:
+        type: string
+      reference_unit:
+        type: string
+    type: object
+  domain.ProductPrice:
+    properties:
+      amount:
+        type: string
+      confidence_score:
+        type: string
+      currency:
+        type: string
+      geo_area:
+        $ref: '#/definitions/domain.EntityRef'
+      id:
+        type: string
+      is_promotion:
+        type: boolean
+      location:
+        $ref: '#/definitions/domain.EntityRef'
+      normalized_amount:
+        type: string
+      observed_at:
+        type: string
+      product_id:
+        type: string
+      quantity:
+        type: string
+      source:
+        $ref: '#/definitions/domain.SourceRef'
+      source_record_id:
+        type: string
+      status:
+        type: string
+      unit_code:
+        type: string
+    type: object
+  domain.ProductPriceUpsert:
+    properties:
+      amount:
+        example: "2.35"
+        type: string
+      confidence_score:
+        example: "0.850"
+        type: string
+      contributor_id:
+        format: uuid
+        type: string
+      currency:
+        example: EUR
+        maxLength: 3
+        minLength: 3
+        type: string
+      id:
+        format: uuid
+        type: string
+      is_promotion:
+        type: boolean
+      location_id:
+        format: uuid
+        type: string
+      normalized_amount:
+        example: "2.3500"
+        type: string
+      observed_at:
+        format: date-time
+        type: string
+      product_id:
+        format: uuid
+        type: string
+      quantity:
+        example: "1.000"
+        type: string
+      source_id:
+        format: uuid
+        type: string
+      source_record_id:
+        type: string
+      status:
+        enum:
+        - pending
+        - approved
+        - rejected
+        - flagged
+        type: string
+      unit_code:
+        example: L
+        maxLength: 16
+        type: string
+    type: object
+  domain.ProductUpsert:
+    properties:
+      attributes:
+        type: object
+      barcode:
+        maxLength: 32
+        type: string
+      brand:
+        type: string
+      category_id:
+        format: uuid
+        type: string
+      id:
+        format: uuid
+        type: string
+      is_generic:
+        type: boolean
+      name:
+        type: string
+      reference_unit:
+        maxLength: 16
+        type: string
+    type: object
+  domain.SourceRef:
+    properties:
+      id:
+        type: string
+      kind:
+        type: string
+      name:
+        type: string
+    type: object
+  domain.SourceUpsert:
+    properties:
+      attribution:
+        type: string
+      homepage_url:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      kind:
+        type: string
+      license_name:
+        type: string
+      license_url:
+        type: string
+      name:
+        type: string
+    type: object
+  domain.UnitUpsert:
+    properties:
+      code:
+        type: string
+      dimension:
+        type: string
+      to_base_factor:
+        type: string
+    type: object
+  httpapi.BuildInfo:
+    properties:
+      build_time:
+        type: string
+      commit:
+        type: string
+      name:
+        type: string
+      version:
+        type: string
+    type: object
+  httpapi.PaginationMeta:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+    type: object
+  httpapi.Problem:
+    properties:
+      detail:
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  httpapi.ProductListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Product'
+        type: array
+      meta:
+        $ref: '#/definitions/httpapi.PaginationMeta'
+    type: object
+  httpapi.ProductPriceListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.ProductPrice'
+        type: array
+      meta:
+        $ref: '#/definitions/httpapi.PaginationMeta'
+    type: object
+  httpapi.ProductPriceResponse:
+    properties:
+      data:
+        $ref: '#/definitions/domain.ProductPrice'
+    type: object
+  httpapi.ProductResponse:
+    properties:
+      data:
+        $ref: '#/definitions/domain.Product'
+    type: object
+  httpapi.ResourceResponse:
+    properties:
+      data: {}
+    type: object
+  httpapi.StatusResponse:
+    properties:
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: |-
+    API de comparaison du coût de la vie dans la zone euro.
+    Les montants décimaux sont exposés sous forme de chaînes pour préserver leur précision.
+  title: OjoZone API
+  version: "1.0"
+paths:
+  /api/v1/admin/users:
+    get:
+      description: Lecture seule en l'absence d'authentification ; password_hash n'est
+        jamais exposé.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Consulter les utilisateurs en administration
+      tags:
+      - Administration
+  /api/v1/admin/users/{id}:
+    get:
+      description: Lecture seule en l'absence d'authentification ; password_hash n'est
+        jamais exposé.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Consulter les utilisateurs en administration
+      tags:
+      - Administration
+  /api/v1/categories:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Catégorie
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.CategoryUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les catégories
+      tags:
+      - Catégories
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Catégorie
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.CategoryUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les catégories
+      tags:
+      - Catégories
+  /api/v1/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Catégorie
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.CategoryUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les catégories
+      tags:
+      - Catégories
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Catégorie
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.CategoryUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les catégories
+      tags:
+      - Catégories
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Catégorie
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.CategoryUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les catégories
+      tags:
+      - Catégories
+  /api/v1/evidence-files:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Preuve
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.EvidenceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les preuves
+      tags:
+      - Preuves
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Preuve
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.EvidenceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les preuves
+      tags:
+      - Preuves
+  /api/v1/evidence-files/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Preuve
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.EvidenceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les preuves
+      tags:
+      - Preuves
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Preuve
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.EvidenceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les preuves
+      tags:
+      - Preuves
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Preuve
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.EvidenceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les preuves
+      tags:
+      - Preuves
+  /api/v1/fuel-prices:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelPriceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les prix des carburants
+      tags:
+      - Prix carburants
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelPriceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les prix des carburants
+      tags:
+      - Prix carburants
+  /api/v1/fuel-prices/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelPriceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les prix des carburants
+      tags:
+      - Prix carburants
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelPriceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les prix des carburants
+      tags:
+      - Prix carburants
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelPriceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les prix des carburants
+      tags:
+      - Prix carburants
+  /api/v1/fuel-types:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Type de carburant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelTypeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les types de carburant
+      tags:
+      - Carburants
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Type de carburant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelTypeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les types de carburant
+      tags:
+      - Carburants
+  /api/v1/fuel-types/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Type de carburant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelTypeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les types de carburant
+      tags:
+      - Carburants
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Type de carburant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelTypeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les types de carburant
+      tags:
+      - Carburants
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Type de carburant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.FuelTypeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les types de carburant
+      tags:
+      - Carburants
+  /api/v1/geo-areas:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Zone géographique
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.GeoAreaUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les zones géographiques
+      tags:
+      - Zones géographiques
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Zone géographique
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.GeoAreaUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les zones géographiques
+      tags:
+      - Zones géographiques
+  /api/v1/geo-areas/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Zone géographique
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.GeoAreaUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les zones géographiques
+      tags:
+      - Zones géographiques
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Zone géographique
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.GeoAreaUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les zones géographiques
+      tags:
+      - Zones géographiques
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Zone géographique
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.GeoAreaUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les zones géographiques
+      tags:
+      - Zones géographiques
+  /api/v1/housing-observations:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.HousingUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations immobilières
+      tags:
+      - Immobilier
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.HousingUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations immobilières
+      tags:
+      - Immobilier
+  /api/v1/housing-observations/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.HousingUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations immobilières
+      tags:
+      - Immobilier
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.HousingUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations immobilières
+      tags:
+      - Immobilier
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.HousingUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations immobilières
+      tags:
+      - Immobilier
+  /api/v1/income-observations:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.IncomeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations de revenus
+      tags:
+      - Revenus
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.IncomeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations de revenus
+      tags:
+      - Revenus
+  /api/v1/income-observations/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.IncomeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations de revenus
+      tags:
+      - Revenus
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.IncomeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations de revenus
+      tags:
+      - Revenus
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Observation
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.IncomeUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les observations de revenus
+      tags:
+      - Revenus
+  /api/v1/locations:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Lieu avec latitude et longitude
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.LocationUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les lieux
+      tags:
+      - Lieux
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Lieu avec latitude et longitude
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.LocationUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les lieux
+      tags:
+      - Lieux
+  /api/v1/locations/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Lieu avec latitude et longitude
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.LocationUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les lieux
+      tags:
+      - Lieux
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Lieu avec latitude et longitude
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.LocationUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les lieux
+      tags:
+      - Lieux
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Lieu avec latitude et longitude
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.LocationUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les lieux
+      tags:
+      - Lieux
+  /api/v1/merchants:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Commerçant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.MerchantUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les commerçants
+      tags:
+      - Commerçants
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Commerçant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.MerchantUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les commerçants
+      tags:
+      - Commerçants
+  /api/v1/merchants/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Commerçant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.MerchantUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les commerçants
+      tags:
+      - Commerçants
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Commerçant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.MerchantUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les commerçants
+      tags:
+      - Commerçants
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Commerçant
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.MerchantUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les commerçants
+      tags:
+      - Commerçants
+  /api/v1/moderation-events:
+    get:
+      consumes:
+      - application/json
+      description: 'Ressource append-only : aucun PUT ni DELETE.'
+      parameters:
+      - description: Événement
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.ModerationEventAppend'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Consulter ou ajouter les événements de modération
+      tags:
+      - Modération
+    post:
+      consumes:
+      - application/json
+      description: 'Ressource append-only : aucun PUT ni DELETE.'
+      parameters:
+      - description: Événement
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.ModerationEventAppend'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Consulter ou ajouter les événements de modération
+      tags:
+      - Modération
+  /api/v1/moderation-events/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 'Ressource append-only : aucun PUT ni DELETE.'
+      parameters:
+      - description: Événement
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.ModerationEventAppend'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Consulter ou ajouter les événements de modération
+      tags:
+      - Modération
+  /api/v1/price-aggregates:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Agrégat
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.PriceAggregateUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les agrégats mensuels
+      tags:
+      - Agrégats
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Agrégat
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.PriceAggregateUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les agrégats mensuels
+      tags:
+      - Agrégats
+  /api/v1/price-aggregates/{geo_area_id}/{metric_type}/{subject_id}/{month}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Agrégat
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.PriceAggregateUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les agrégats mensuels
+      tags:
+      - Agrégats
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Agrégat
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.PriceAggregateUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les agrégats mensuels
+      tags:
+      - Agrégats
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Agrégat
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.PriceAggregateUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les agrégats mensuels
+      tags:
+      - Agrégats
+  /api/v1/product-prices:
+    get:
+      parameters:
+      - description: UUID du produit
+        format: uuid
+        in: query
+        name: product_id
+        type: string
+      - description: UUID de la zone géographique
+        format: uuid
+        in: query
+        name: geo_area_id
+        type: string
+      - description: Statut
+        enum:
+        - pending
+        - approved
+        - rejected
+        - flagged
+        in: query
+        name: status
+        type: string
+      - default: 20
+        description: Nombre de résultats
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        description: Décalage
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductPriceListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Lister toutes les observations de prix produit
+      tags:
+      - Prix
+    post:
+      consumes:
+      - application/json
+      description: L'upsert utilise la clé composée source_id et source_record_id.
+        source_record_id est donc obligatoire.
+      parameters:
+      - description: Observation de prix
+        in: body
+        name: price
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ProductPriceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductPriceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Créer ou mettre à jour un prix produit
+      tags:
+      - Prix
+  /api/v1/product-prices/{id}:
+    delete:
+      parameters:
+      - description: UUID de l'observation
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Supprimer un prix produit
+      tags:
+      - Prix
+    get:
+      parameters:
+      - description: UUID de l'observation
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductPriceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Obtenir un prix produit
+      tags:
+      - Prix
+    put:
+      consumes:
+      - application/json
+      description: Crée l'observation si l'UUID n'existe pas, sinon remplace ses champs
+        modifiables.
+      parameters:
+      - description: UUID de l'observation
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Nouvel état du prix
+        in: body
+        name: price
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ProductPriceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductPriceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Remplacer un prix produit
+      tags:
+      - Prix
+  /api/v1/products:
+    get:
+      parameters:
+      - description: Nom, marque ou code-barres
+        in: query
+        name: q
+        type: string
+      - default: 20
+        description: Nombre de résultats
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        description: Décalage
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Lister les produits
+      tags:
+      - Produits
+    post:
+      consumes:
+      - application/json
+      description: Avec un code-barres, l'upsert utilise le code-barres. Sans code-barres,
+        un UUID id est obligatoire.
+      parameters:
+      - description: Produit à créer ou mettre à jour
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ProductUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Créer ou mettre à jour un produit
+      tags:
+      - Produits
+  /api/v1/products/{id}:
+    delete:
+      parameters:
+      - description: UUID du produit
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Supprimer un produit
+      tags:
+      - Produits
+    get:
+      parameters:
+      - description: UUID du produit
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Obtenir un produit
+      tags:
+      - Produits
+    put:
+      consumes:
+      - application/json
+      description: Crée le produit si l'UUID n'existe pas encore, sinon remplace ses
+        champs modifiables.
+      parameters:
+      - description: UUID du produit
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Nouvel état du produit
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ProductUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Remplacer un produit
+      tags:
+      - Produits
+  /api/v1/products/{id}/prices:
+    get:
+      parameters:
+      - description: UUID du produit
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: UUID de la zone géographique
+        format: uuid
+        in: query
+        name: geo_area_id
+        type: string
+      - default: 20
+        description: Nombre de résultats
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        description: Décalage
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductPriceListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Lister les prix d'un produit
+      tags:
+      - Prix
+  /api/v1/products/by-barcode/{barcode}:
+    get:
+      parameters:
+      - description: Code-barres
+        in: path
+        maxLength: 32
+        name: barcode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Obtenir un produit par code-barres
+      tags:
+      - Produits
+  /api/v1/sources:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Source
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.SourceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les sources
+      tags:
+      - Sources
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Source
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.SourceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les sources
+      tags:
+      - Sources
+  /api/v1/sources/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Source
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.SourceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les sources
+      tags:
+      - Sources
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Source
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.SourceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les sources
+      tags:
+      - Sources
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Source
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.SourceUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les sources
+      tags:
+      - Sources
+  /api/v1/units:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Unité
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.UnitUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les unités
+      tags:
+      - Unités
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Unité
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.UnitUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les unités
+      tags:
+      - Unités
+  /api/v1/units/{code}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Unité
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.UnitUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les unités
+      tags:
+      - Unités
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Unité
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.UnitUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les unités
+      tags:
+      - Unités
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Unité
+        in: body
+        name: payload
+        schema:
+          $ref: '#/definitions/domain.UnitUpsert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ResourceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Gérer les unités
+      tags:
+      - Unités
+  /ops/infos:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.BuildInfo'
+      summary: Obtenir les informations du service
+      tags:
+      - Operations
+  /ops/liveness:
+    get:
+      description: Cette sonde ne dépend d'aucun service externe.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.StatusResponse'
+      summary: Vérifier la vitalité
+      tags:
+      - Operations
+  /ops/readiness:
+    get:
+      description: Vérifie notamment la connexion PostgreSQL.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.StatusResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      summary: Vérifier la disponibilité
+      tags:
+      - Operations
+produces:
+- application/json
+schemes:
+- http
+- https
+swagger: "2.0"

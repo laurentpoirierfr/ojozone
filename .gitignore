@@ -1,0 +1,10 @@
+# Secrets locaux
+.env
+.env.*
+!.env.example
+!deploy/.env.example
+
+# Fichiers générés par les outils locaux
+*.log
+
+bin/

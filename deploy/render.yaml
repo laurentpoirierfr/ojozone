@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ojozone
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: APP_ENV
+        value: development
+      - key: PUBLIC_BASE_URL
+        value: https://ojozone.onrender.com
+      - key: DATABASE_URL
+        sync: false
