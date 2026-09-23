@@ -54,6 +54,18 @@ export function listProducts(search = '', limit = 50) {
   return jsonRequest(addQuery('/products', { q: search, limit }))
 }
 
+export function listLocations(limit = 200) {
+  return jsonRequest(addQuery('/locations', { limit }))
+}
+
+export function listFuelTypes(limit = 200) {
+  return jsonRequest(addQuery('/fuel-types', { limit }))
+}
+
+export function listUnits(limit = 200) {
+  return jsonRequest(addQuery('/units', { limit }))
+}
+
 export function getProduct(id) {
   return jsonRequest(`/products/${id}`)
 }
@@ -84,6 +96,37 @@ export function getMe(accessToken) {
 
 export function listMyContributions(accessToken, limit = 50) {
   return jsonRequest(addQuery('/me/contributions', { limit }), { accessToken })
+}
+
+export function submitProductPriceContribution(accessToken, payload) {
+  return jsonRequest('/contributions/product-prices', {
+    method: 'POST',
+    accessToken,
+    body: payload,
+  })
+}
+
+export function submitFuelPriceContribution(accessToken, payload) {
+  return jsonRequest('/contributions/fuel-prices', {
+    method: 'POST',
+    accessToken,
+    body: payload,
+  })
+}
+
+export function patchContribution(accessToken, id, payload) {
+  return jsonRequest(`/contributions/${id}`, {
+    method: 'PATCH',
+    accessToken,
+    body: payload,
+  })
+}
+
+export function deleteContribution(accessToken, id) {
+  return jsonRequest(`/contributions/${id}`, {
+    method: 'DELETE',
+    accessToken,
+  })
 }
 
 export function listModerationQueue(accessToken, status = '', limit = 50) {

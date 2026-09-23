@@ -22,6 +22,7 @@ async function handleLogout() {
     <nav aria-label="Principal">
       <RouterLink to="/">Rechercher</RouterLink>
       <RouterLink v-if="currentUser" to="/account">Mon compte</RouterLink>
+      <RouterLink v-if="currentUser" to="/contribuer">Contribuer</RouterLink>
       <RouterLink v-if="hasRole('moderator', 'admin')" to="/moderation">Modération</RouterLink>
       <RouterLink v-if="hasRole('admin')" to="/admin">Administration</RouterLink>
     </nav>

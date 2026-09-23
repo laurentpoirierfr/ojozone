@@ -48,6 +48,12 @@ onMounted(load)
       <div v-if="product.barcode"><dt>Code-barres</dt><dd>{{ product.barcode }}</dd></div>
     </dl>
 
+    <p>
+      <RouterLink :to="{ path: '/contribuer', query: { product_id: product.id } }">
+        Soumettre un prix pour ce produit
+      </RouterLink>
+    </p>
+
     <h2>Prix récents</h2>
     <p v-if="prices.length === 0" class="muted">Aucun prix publié pour le moment.</p>
     <table v-else>
