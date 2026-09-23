@@ -338,6 +338,30 @@ type HousingObservation struct {
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 }
 
+type Import struct {
+	ID           pgtype.UUID        `json:"id"`
+	ResourceType string             `json:"resource_type"`
+	Status       string             `json:"status"`
+	CreatedBy    pgtype.UUID        `json:"created_by"`
+	LineCount    int32              `json:"line_count"`
+	ValidCount   int32              `json:"valid_count"`
+	InvalidCount int32              `json:"invalid_count"`
+	Report       []byte             `json:"report"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	ValidatedAt  pgtype.Timestamptz `json:"validated_at"`
+	PublishedAt  pgtype.Timestamptz `json:"published_at"`
+}
+
+type ImportRow struct {
+	ID         pgtype.UUID        `json:"id"`
+	ImportID   pgtype.UUID        `json:"import_id"`
+	LineNumber int32              `json:"line_number"`
+	Payload    []byte             `json:"payload"`
+	Valid      *bool              `json:"valid"`
+	Error      *string            `json:"error"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+}
+
 type IncomeObservation struct {
 	ID             pgtype.UUID        `json:"id"`
 	GeoAreaID      pgtype.UUID        `json:"geo_area_id"`

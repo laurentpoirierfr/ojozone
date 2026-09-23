@@ -108,6 +108,21 @@ func (s serviceStub) ReplaceResource(context.Context, string, domain.ResourceKey
 	return struct{}{}, nil
 }
 func (s serviceStub) DeleteResource(context.Context, string, domain.ResourceKey) error { return nil }
+func (s serviceStub) CreateImport(context.Context, string, domain.ImportCreate) (domain.Import, error) {
+	return domain.Import{}, nil
+}
+func (s serviceStub) ListImports(context.Context, domain.Pagination) ([]domain.Import, error) {
+	return []domain.Import{}, nil
+}
+func (s serviceStub) GetImport(context.Context, string) (domain.Import, error) {
+	return domain.Import{}, domain.ErrNotFound
+}
+func (s serviceStub) ValidateImport(context.Context, string) (domain.Import, error) {
+	return domain.Import{}, domain.ErrNotFound
+}
+func (s serviceStub) PublishImport(context.Context, string) (domain.Import, error) {
+	return domain.Import{}, domain.ErrNotFound
+}
 
 func TestOperationalRoutes(t *testing.T) {
 	gin.SetMode(gin.TestMode)
@@ -244,7 +259,7 @@ func TestRemainingAPIRoutesAreRegistered(t *testing.T) {
 			t.Errorf("route agrégat absente : %s", method)
 		}
 	}
-	for _, entry := range []string{"GET /api/v1/moderation-events", "POST /api/v1/moderation-events", "GET /api/v1/moderation-events/:id", "GET /api/v1/admin/users", "GET /api/v1/admin/users/:id"} {
+	for _, entry := range []string{"GET /api/v1/moderation-events", "POST /api/v1/moderation-events", "GET /api/v1/moderation-events/:id", "GET /api/v1/admin/users", "GET /api/v1/admin/users/:id", "POST /api/v1/admin/imports", "GET /api/v1/admin/imports", "GET /api/v1/admin/imports/:id", "POST /api/v1/admin/imports/:id/validate", "POST /api/v1/admin/imports/:id/publish"} {
 		if !present[entry] {
 			t.Errorf("route absente : %s", entry)
 		}
@@ -305,6 +320,11 @@ func TestWriteRoutesRequireAuthentication(t *testing.T) {
 		{method: http.MethodGet, path: "/api/v1/moderation/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
 		{method: http.MethodPost, path: "/api/v1/moderation/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/approve", body: []byte(`{}`)},
 		{method: http.MethodPost, path: "/api/v1/moderation/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/reject", body: []byte(`{}`)},
+		{method: http.MethodPost, path: "/api/v1/admin/imports", body: []byte(`{"resource_type":"units","rows":[]}`)},
+		{method: http.MethodGet, path: "/api/v1/admin/imports"},
+		{method: http.MethodGet, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
+		{method: http.MethodPost, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/validate"},
+		{method: http.MethodPost, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/publish"},
 	}
 
 	for _, test := range tests {
@@ -388,6 +408,58 @@ func TestModeratorCanAccessModeration(t *testing.T) {
 	router.ServeHTTP(response, request)
 	if response.Code != http.StatusOK {
 		t.Fatalf("status obtenu %d, attendu %d", response.Code, http.StatusOK)
+	}
+}
+
+func TestAdminCanManageImports(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := newTestRouter(serviceStub{})
+	createBody := []byte(`{"resource_type":"units","rows":[{"code":"L","dimension":"volume","to_base_factor":"1"}]}`)
+	tests := []struct {
+		method   string
+		path     string
+		body     []byte
+		expected int
+	}{
+		{method: http.MethodPost, path: "/api/v1/admin/imports", body: createBody, expected: http.StatusCreated},
+		{method: http.MethodGet, path: "/api/v1/admin/imports", expected: http.StatusOK},
+		{method: http.MethodGet, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31", expected: http.StatusNotFound},
+		{method: http.MethodPost, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/validate", expected: http.StatusNotFound},
+		{method: http.MethodPost, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/publish", expected: http.StatusNotFound},
+	}
+	for _, test := range tests {
+		response := httptest.NewRecorder()
+		request := httptest.NewRequest(test.method, test.path, bytes.NewReader(test.body))
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Authorization", testBearer(t, domain.RoleAdmin))
+		router.ServeHTTP(response, request)
+		if response.Code != test.expected {
+			t.Errorf("%s %s : status obtenu %d, attendu %d", test.method, test.path, response.Code, test.expected)
+		}
+	}
+}
+
+func TestMemberCannotManageImports(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := newTestRouter(serviceStub{})
+	for _, test := range []struct {
+		method string
+		path   string
+	}{
+		{method: http.MethodPost, path: "/api/v1/admin/imports"},
+		{method: http.MethodGet, path: "/api/v1/admin/imports"},
+		{method: http.MethodGet, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
+		{method: http.MethodPost, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/validate"},
+		{method: http.MethodPost, path: "/api/v1/admin/imports/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/publish"},
+	} {
+		response := httptest.NewRecorder()
+		request := httptest.NewRequest(test.method, test.path, bytes.NewReader([]byte(`{}`)))
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Authorization", testBearer(t, domain.RoleMember))
+		router.ServeHTTP(response, request)
+		if response.Code != http.StatusForbidden {
+			t.Errorf("%s %s : status obtenu %d, attendu %d", test.method, test.path, response.Code, http.StatusForbidden)
+		}
 	}
 }
 

@@ -20,16 +20,16 @@
 
 ### P0 - Première démonstration fonctionnelle
 
-- [ ] Choisir les villes et pays pilotes.
-- [ ] Définir le panier initial de produits essentiels et les unités canoniques.
-- [ ] Ajouter une migration ou un mécanisme de seed pour les unités, catégories, sources et zones pilotes.
-- [ ] Initialiser le frontend web dans `app/frontend`.
-- [ ] Implémenter la recherche et la liste des produits.
-- [ ] Implémenter la fiche produit avec ses prix récents.
-- [ ] Ajouter le `Dockerfile` multi-stage servant le frontend compilé avec le backend Go.
-- [ ] Ajouter le backend au `docker-compose.yaml`.
+- [x] Choisir les villes et pays pilotes : Paris, Berlin, Madrid, Lisbonne, Amsterdam (5 pays de la zone euro).
+- [x] Définir le panier initial de produits essentiels et les unités canoniques.
+- [x] Remplacer l'ancienne migration de seed (retirée pour des migrations 100 % structurelles) par le pipeline d'imports administré : `POST /api/v1/admin/imports` (draft), `POST .../validate`, `POST .../publish`, `GET .../imports` et `GET .../imports/{id}` avec rapport d'erreurs et idempotence par upserts (`000004_admin_imports`).
+- [x] Initialiser le frontend web Vue 3 + Vite dans `app/frontend` (build vers `app/backend/static`).
+- [x] Implémenter la recherche et la liste des produits.
+- [x] Implémenter la fiche produit avec ses prix récents.
+- [x] Ajouter le `Dockerfile` multi-stage servant le frontend compilé avec le backend Go.
+- [x] Ajouter le backend au `docker-compose.yaml`.
 - [ ] Déployer une première version sur Render avec la base Neon.
-- [ ] Vérifier le parcours complet : navigateur → API → PostgreSQL.
+- [x] Vérifier le parcours complet : navigateur → API → PostgreSQL.
 
 ### P1 - Contributions et sécurité
 
@@ -97,7 +97,7 @@ Documents :
 
 ### À faire
 
-- [ ] Créer des seeds versionnés pour les unités, catégories et zones pilotes.
+- [ ] Créer des fichiers de seed JSON pour les unités, catégories et zones pilotes (au lieu d'un seed SQL versionné).
 - [ ] Ajouter des tests automatiques des contraintes, index uniques et suppressions référencées.
 - [ ] Définir une stratégie de sauvegarde et restauration Neon.
 - [ ] Définir la rétention et le partitionnement éventuel des observations volumineuses.
@@ -138,7 +138,7 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 
 - [~] Validation métier : règles principales présentes, mais couverture à compléter pour toutes les ressources génériques.
 - [~] Tests unitaires : handlers et règles d'upsert principales couverts, ainsi que le parcours d'authentification, mais pas chaque ressource.
-- [x] Tests d'intégration : suite `tests/` automatisée contre PostgreSQL réel via `make test-integration` (parcours auth, produits, rôles, erreurs `problem+json` et contributions couverts).
+- [x] Tests d'intégration : suite `tests/` automatisée contre PostgreSQL réel via `make test-integration` (parcours auth, produits, rôles, erreurs `problem+json`, contributions et imports couverts).
 - [~] Pagination : `limit/offset` disponible ; le curseur prévu dans les spécifications reste à implémenter.
 
 ### À faire
@@ -151,7 +151,7 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 - [ ] Ajouter des filtres métier : période, zone, statut, source et fraîcheur.
 - [ ] Implémenter la pagination par curseur.
 - [ ] Ajouter les routes de comparaison et d'historique prévues par les spécifications.
-- [ ] Implémenter les imports CSV/JSON avec rapport d'erreurs et idempotence.
+- [x] Implémenter les imports JSON avec rapport d'erreurs et idempotence (création `draft`, validation, publication via upserts, tables `imports`/`import_rows`, routes `/api/v1/admin/imports*`).
 - [ ] Ajouter le dépôt et la lecture de preuves via URLs R2 signées.
 - [ ] Ajouter la détection de doublons et de valeurs aberrantes.
 - [ ] Ajouter les règles de transition des statuts de modération.
@@ -199,14 +199,15 @@ Documentation interactive : `http://localhost:8080/swagger/index.html`
 - [ ] Recherche géographique de proximité.
 - [ ] Historique agrégé produits, carburants, immobilier et revenus.
 - [ ] Comparaison entre plusieurs zones et panier personnalisé.
-- [ ] Import, validation et publication de fichiers.
+- [ ] Import, validation et publication de fichiers via URLs R2 signées.
 - [ ] Fusion de produits en doublon.
 
 ## Frontend web
 
 ### Réalisé
 
-- [x] Créer une page HTML statique minimale servie par le backend.
+- [x] Créer une page web Vue 3 + Vite dans `app/frontend` (build vers `app/backend/static`).
+- [x] Intégrer le logo OjoZone et les scripts de scraping initiaux dans le frontend.
 
 ### À faire
 

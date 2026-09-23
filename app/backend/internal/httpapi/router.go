@@ -105,6 +105,13 @@ func NewRouter(appService service.Service, manager tokenParser, staticFS fs.FS, 
 	moderation.POST("/contributions/:id/approve", handler.approveContribution)
 	moderation.POST("/contributions/:id/reject", handler.rejectContribution)
 
+	admin := api.Group("/admin", handler.authenticate, requireRole(domain.RoleAdmin))
+	admin.POST("/imports", handler.createImport)
+	admin.GET("/imports", handler.listImports)
+	admin.GET("/imports/:id", handler.getImport)
+	admin.POST("/imports/:id/validate", handler.validateImport)
+	admin.POST("/imports/:id/publish", handler.publishImport)
+
 	api.GET("/products", handler.listProducts)
 	api.POST("/products", handler.authenticate, requireRole(domain.RoleAdmin), handler.upsertProduct)
 	api.GET("/products/by-barcode/:barcode", handler.getProductByBarcode)
@@ -512,8 +519,10 @@ func handleServiceError(c *gin.Context, err error, fallback string) {
 		writeProblem(c, http.StatusBadRequest, "invalid_moderation", err.Error())
 	case errors.Is(err, service.ErrNoCommunitySource):
 		writeProblem(c, http.StatusServiceUnavailable, "service_unavailable", "Aucune source citoyenne n'est configurée.")
-	case errors.Is(err, service.ErrInvalidID), errors.Is(err, service.ErrInvalidBarcode), errors.Is(err, service.ErrInvalidPagination), errors.Is(err, service.ErrInvalidProduct), errors.Is(err, service.ErrInvalidPrice), errors.Is(err, service.ErrInvalidResource):
+	case errors.Is(err, service.ErrInvalidID), errors.Is(err, service.ErrInvalidBarcode), errors.Is(err, service.ErrInvalidPagination), errors.Is(err, service.ErrInvalidProduct), errors.Is(err, service.ErrInvalidPrice), errors.Is(err, service.ErrInvalidResource), errors.Is(err, service.ErrInvalidImport):
 		writeProblem(c, http.StatusBadRequest, "invalid_request", err.Error())
+	case errors.Is(err, service.ErrImportState):
+		writeProblem(c, http.StatusConflict, "import_state", err.Error())
 	default:
 		writeProblem(c, http.StatusInternalServerError, "internal_error", fallback)
 	}

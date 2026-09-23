@@ -157,6 +157,27 @@ func (r *repositoryStub) UpsertResource(_ context.Context, resource string, inpu
 func (r *repositoryStub) DeleteResource(context.Context, string, domain.ResourceKey) error {
 	return nil
 }
+func (r *repositoryStub) CreateImport(context.Context, domain.ImportCreate, string) (domain.Import, error) {
+	return domain.Import{}, nil
+}
+func (r *repositoryStub) GetImport(context.Context, string) (domain.Import, error) {
+	return domain.Import{}, domain.ErrNotFound
+}
+func (r *repositoryStub) ListImports(context.Context, domain.Pagination) ([]domain.Import, error) {
+	return nil, nil
+}
+func (r *repositoryStub) ListImportRows(context.Context, string) ([]domain.ImportRow, error) {
+	return nil, nil
+}
+func (r *repositoryStub) SetImportRowStatus(context.Context, string, int32, bool, *string) error {
+	return nil
+}
+func (r *repositoryStub) MarkImportValidated(context.Context, string, int32, int32, []byte) error {
+	return nil
+}
+func (r *repositoryStub) MarkImportPublished(context.Context, string, []byte) error {
+	return nil
+}
 
 func TestUpsertProductUsesBarcodeWhenPresent(t *testing.T) {
 	repository := &repositoryStub{}

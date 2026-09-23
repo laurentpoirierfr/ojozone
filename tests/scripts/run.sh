@@ -60,11 +60,9 @@ for _ in $(seq 1 30); do
 	sleep 1
 done
 
-echo "==> Creation de la base $DB_NAME (si absente)"
-exists="$($COMPOSE exec -T postgres psql -U ojozone -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname = '${DB_NAME}'" | tr -d '[:space:]')"
-if [ "$exists" != "1" ]; then
-	$COMPOSE exec -T postgres psql -U ojozone -d postgres -c "CREATE DATABASE \"${DB_NAME}\"" >/dev/null
-fi
+echo "==> Recreation de la base $DB_NAME (test isolé)"
+$COMPOSE exec -T postgres psql -U ojozone -d postgres -c "DROP DATABASE IF EXISTS \"${DB_NAME}\"" >/dev/null
+$COMPOSE exec -T postgres psql -U ojozone -d postgres -c "CREATE DATABASE \"${DB_NAME}\"" >/dev/null
 
 echo "==> Application des migrations sur $DB_NAME"
 $COMPOSE run --rm migrate -path=/migrations -database "$MIGRATE_DATABASE_URL" up >/dev/null
