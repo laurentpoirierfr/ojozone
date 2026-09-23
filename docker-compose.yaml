@@ -25,5 +25,25 @@ services:
     volumes:
       - ./deploy/migration/sql:/migrations:ro
 
+  api:
+    build:
+      context: .
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgres://ojozone@postgres:5432/${POSTGRES_DB:-ojozone}?sslmode=disable&search_path=public
+      AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-development-secret-do-not-use-in-production}
+    ports:
+      - "127.0.0.1:${API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/ops/readiness | grep -q ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+
 volumes:
   postgres-data:

@@ -6,12 +6,16 @@ services:
     region: frankfurt
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    healthCheckPath: /health
+    healthCheckPath: /ops/readiness
     autoDeployTrigger: commit
     envVars:
       - key: APP_ENV
-        value: development
+        value: production
+      - key: PORT
+        value: 8080
       - key: PUBLIC_BASE_URL
         value: https://ojozone.onrender.com
       - key: DATABASE_URL
+        sync: false
+      - key: AUTH_JWT_SECRET
         sync: false

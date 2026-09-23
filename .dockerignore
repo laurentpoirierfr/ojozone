@@ -1,0 +1,12 @@
+.git
+.gitignore
+app/frontend/node_modules
+app/frontend/dist
+app/backend/bin
+deploy
+tests
+docs
+**/*.md
+renovate.json
+.opencode
+opencode.sh
