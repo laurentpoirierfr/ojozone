@@ -5,6 +5,7 @@ import ProductView from './views/ProductView.vue'
 import LoginView from './views/LoginView.vue'
 import RegisterView from './views/RegisterView.vue'
 import AccountView from './views/AccountView.vue'
+import ContributeView from './views/ContributeView.vue'
 import ModerationView from './views/ModerationView.vue'
 import AdminView from './views/AdminView.vue'
 import NotFoundView from './views/NotFoundView.vue'
@@ -17,6 +18,7 @@ const router = createRouter({
     { path: '/login', name: 'login', component: LoginView, meta: { guest: true } },
     { path: '/register', name: 'register', component: RegisterView, meta: { guest: true } },
     { path: '/account', name: 'account', component: AccountView, meta: { requiresAuth: true } },
+    { path: '/contribuer', name: 'contribute', component: ContributeView, meta: { requiresAuth: true } },
     { path: '/moderation', name: 'moderation', component: ModerationView, meta: { roles: ['moderator', 'admin'] } },
     { path: '/admin', name: 'admin', component: AdminView, meta: { roles: ['admin'] } },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
