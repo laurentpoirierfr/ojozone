@@ -102,6 +102,43 @@ func (c *Client) DeleteContribution(ctx context.Context, accessToken, id string)
 	return c.fetch(ctx, http.MethodDelete, "/api/v1/contributions/"+id, accessToken, nil, nil)
 }
 
+// ListModerationQueue liste les contributions a moderer, filtrees par statut.
+func (c *Client) ListModerationQueue(ctx context.Context, accessToken, status string) ([]ModerationQueueItem, PaginationMeta, *Problem, error) {
+	path := "/api/v1/moderation/queue"
+	if status != "" {
+		path += "?status=" + url.QueryEscape(status)
+	}
+	var items []ModerationQueueItem
+	meta, problem, err := c.fetchList(ctx, http.MethodGet, path, accessToken, nil, &items)
+	return items, meta, problem, err
+}
+
+// ApproveContribution approuve une contribution et retourne son detail.
+func (c *Client) ApproveContribution(ctx context.Context, accessToken, id string, note string) (ContributionDetail, *Problem, error) {
+	var detail ContributionDetail
+	payload := map[string]any{}
+	if note != "" {
+		payload["note"] = note
+	}
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/moderation/contributions/"+id+"/approve", accessToken, payload, &detail)
+	return detail, problem, err
+}
+
+// RejectContribution rejette une contribution avec un motif obligatoire.
+func (c *Client) RejectContribution(ctx context.Context, accessToken, id, note string) (ContributionDetail, *Problem, error) {
+	var detail ContributionDetail
+	payload := map[string]any{"note": note}
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/moderation/contributions/"+id+"/reject", accessToken, payload, &detail)
+	return detail, problem, err
+}
+
+// ListModerationEvents liste les evenements de moderation (append-only, public).
+func (c *Client) ListModerationEvents(ctx context.Context) ([]ModerationEvent, PaginationMeta, *Problem, error) {
+	var events []ModerationEvent
+	meta, problem, err := c.fetchList(ctx, http.MethodGet, "/api/v1/moderation-events", "", nil, &events)
+	return events, meta, problem, err
+}
+
 // ListProducts recherche les produits publiquement (filtre search optionnel).
 func (c *Client) ListProducts(ctx context.Context, search string) ([]Product, PaginationMeta, *Problem, error) {
 	path := "/api/v1/products"
@@ -153,6 +190,77 @@ func (c *Client) ListAdminUsers(ctx context.Context, accessToken string) ([]User
 	var users []User
 	problem, err := c.fetch(ctx, http.MethodGet, "/api/v1/admin/users", accessToken, nil, &users)
 	return users, problem, err
+}
+
+// Unit est une unité de mesure du référentiel.
+type Unit struct {
+	Code         string `json:"code"`
+	Dimension    string `json:"dimension"`
+	ToBaseFactor string `json:"to_base_factor"`
+}
+
+// ListUnits renvoie les unités de mesure (publique).
+func (c *Client) ListUnits(ctx context.Context) ([]Unit, PaginationMeta, *Problem, error) {
+	var units []Unit
+	meta, problem, err := c.fetchList(ctx, http.MethodGet, "/api/v1/units", "", nil, &units)
+	return units, meta, problem, err
+}
+
+// Import est l'état et le rapport d'un import administré.
+type Import struct {
+	ID           string          `json:"id"`
+	ResourceType string          `json:"resource_type"`
+	Status       string          `json:"status"`
+	LineCount    int             `json:"line_count"`
+	ValidCount   int             `json:"valid_count"`
+	InvalidCount int             `json:"invalid_count"`
+	Report       []ImportReport  `json:"report"`
+	CreatedAt    string          `json:"created_at"`
+	ValidatedAt  *string         `json:"validated_at"`
+	PublishedAt  *string         `json:"published_at"`
+}
+
+// ImportReport est une entrée du rapport d'erreurs d'un import.
+type ImportReport struct {
+	Line  int    `json:"line"`
+	Error string `json:"error"`
+}
+
+// CreateImport enregistre un import au statut draft (201).
+func (c *Client) CreateImport(ctx context.Context, accessToken string, resourceType string, rows []json.RawMessage) (Import, *Problem, error) {
+	var imported Import
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/admin/imports", accessToken, map[string]any{
+		"resource_type": resourceType, "rows": rows,
+	}, &imported)
+	return imported, problem, err
+}
+
+// ListImports liste les imports administrés.
+func (c *Client) ListImports(ctx context.Context, accessToken string) ([]Import, PaginationMeta, *Problem, error) {
+	var imports []Import
+	meta, problem, err := c.fetchList(ctx, http.MethodGet, "/api/v1/admin/imports", accessToken, nil, &imports)
+	return imports, meta, problem, err
+}
+
+// GetImport lit l'état et le rapport d'un import.
+func (c *Client) GetImport(ctx context.Context, accessToken, id string) (Import, *Problem, error) {
+	var imported Import
+	problem, err := c.fetch(ctx, http.MethodGet, "/api/v1/admin/imports/"+id, accessToken, nil, &imported)
+	return imported, problem, err
+}
+
+// ValidateImport lance la validation des lignes d'un import draft.
+func (c *Client) ValidateImport(ctx context.Context, accessToken, id string) (Import, *Problem, error) {
+	var imported Import
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/admin/imports/"+id+"/validate", accessToken, nil, &imported)
+	return imported, problem, err
+}
+
+// PublishImport applique les lignes valides d'un import validated.
+func (c *Client) PublishImport(ctx context.Context, accessToken, id string) (Import, *Problem, error) {
+	var imported Import
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/admin/imports/"+id+"/publish", accessToken, nil, &imported)
+	return imported, problem, err
 }
 
 // Raw envoie un corps brut (non serialise) pour tester les corps invalides.

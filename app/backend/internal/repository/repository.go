@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/laurentpoirierfr/ojozone/internal/domain"
 	"github.com/laurentpoirierfr/ojozone/internal/store/db"
@@ -55,14 +56,24 @@ type Repository interface {
 	GetResource(context.Context, string, domain.ResourceKey) (any, error)
 	UpsertResource(context.Context, string, any, bool) (any, error)
 	DeleteResource(context.Context, string, domain.ResourceKey) error
+	ListModerationQueue(context.Context, *string, domain.Pagination) ([]domain.ModerationQueueItem, error)
+	ReviewContribution(context.Context, domain.ContributionReview) error
+	CreateImport(context.Context, domain.ImportCreate, string) (domain.Import, error)
+	GetImport(context.Context, string) (domain.Import, error)
+	ListImports(context.Context, domain.Pagination) ([]domain.Import, error)
+	ListImportRows(context.Context, string) ([]domain.ImportRow, error)
+	SetImportRowStatus(context.Context, string, int32, bool, *string) error
+	MarkImportValidated(context.Context, string, int32, int32, []byte) error
+	MarkImportPublished(context.Context, string, []byte) error
 }
 
 type PostgreSQL struct {
 	queries *db.Queries
+	pool    *pgxpool.Pool
 }
 
-func NewPostgreSQL(queries *db.Queries) *PostgreSQL {
-	return &PostgreSQL{queries: queries}
+func NewPostgreSQL(queries *db.Queries, pool *pgxpool.Pool) *PostgreSQL {
+	return &PostgreSQL{queries: queries, pool: pool}
 }
 
 func (r *PostgreSQL) Ping(ctx context.Context) error {

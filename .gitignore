@@ -8,3 +8,6 @@
 *.log
 
 bin/
+
+opencode.sh
+__debug_bin*

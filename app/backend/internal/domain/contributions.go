@@ -1,6 +1,12 @@
 package domain
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+// ErrContributionNotModifiable indique qu'une contribution a déjà été traitée.
+var ErrContributionNotModifiable = errors.New("contribution no longer modifiable")
 
 // Statuts de modération d'une contribution ou d'une observation.
 const (
@@ -73,4 +79,49 @@ type ContributionPatch struct {
 type ContributionDetail struct {
 	Contribution
 	ContributorID string `json:"contributor_id" format:"uuid"`
+}
+
+// ModerationFilter filtre la file de modération.
+type ModerationFilter struct {
+	Status string
+	Limit  int32
+	Offset int32
+}
+
+// ModerationQueueItem est une entrée de la file de modération.
+type ModerationQueueItem struct {
+	ID               string    `json:"id" format:"uuid"`
+	Type             string    `json:"type"`
+	Status           string    `json:"status"`
+	Subject          string    `json:"subject"`
+	ContributorID    *string   `json:"contributor_id,omitempty" format:"uuid"`
+	ContributorEmail *string   `json:"contributor_email,omitempty"`
+	Amount           string    `json:"amount"`
+	Currency         string    `json:"currency"`
+	Quantity         *string   `json:"quantity,omitempty"`
+	UnitCode         *string   `json:"unit_code,omitempty"`
+	IsPromotion      *bool     `json:"is_promotion,omitempty"`
+	Location         EntityRef `json:"location"`
+	GeoArea          EntityRef `json:"geo_area"`
+	Source           SourceRef `json:"source"`
+	ObservedAt       time.Time `json:"observed_at"`
+	ConfidenceScore  *string   `json:"confidence_score,omitempty"`
+	CreatedAt        time.Time `json:"created_at"`
+}
+
+// ContributionReviewInput est la décision d'un modérateur sur une contribution.
+type ContributionReviewInput struct {
+	Decision   string  `json:"decision" example:"approved" enums:"approved,rejected"`
+	Note       *string `json:"note,omitempty" example:"Prix cohérent avec les relevés voisins"`
+	ReasonCode *string `json:"reason_code,omitempty" example:"outlier"`
+}
+
+// ContributionReview est la décision prête à être appliquée en base.
+type ContributionReview struct {
+	ID          string
+	Type        string
+	ModeratorID string
+	NewStatus   string
+	ReasonCode  *string
+	Note        *string
 }

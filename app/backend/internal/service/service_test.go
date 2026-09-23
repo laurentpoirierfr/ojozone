@@ -135,6 +135,12 @@ func (r *repositoryStub) UpsertProductPriceByID(_ context.Context, input domain.
 	return domain.ProductPrice{}, nil
 }
 func (r *repositoryStub) DeleteProductPrice(context.Context, string) error { return nil }
+func (r *repositoryStub) ListModerationQueue(context.Context, *string, domain.Pagination) ([]domain.ModerationQueueItem, error) {
+	return nil, nil
+}
+func (r *repositoryStub) ReviewContribution(context.Context, domain.ContributionReview) error {
+	return nil
+}
 func (r *repositoryStub) ListResource(context.Context, string, domain.Pagination) (any, error) {
 	return nil, nil
 }
@@ -149,6 +155,27 @@ func (r *repositoryStub) UpsertResource(_ context.Context, resource string, inpu
 	return input, nil
 }
 func (r *repositoryStub) DeleteResource(context.Context, string, domain.ResourceKey) error {
+	return nil
+}
+func (r *repositoryStub) CreateImport(context.Context, domain.ImportCreate, string) (domain.Import, error) {
+	return domain.Import{}, nil
+}
+func (r *repositoryStub) GetImport(context.Context, string) (domain.Import, error) {
+	return domain.Import{}, domain.ErrNotFound
+}
+func (r *repositoryStub) ListImports(context.Context, domain.Pagination) ([]domain.Import, error) {
+	return nil, nil
+}
+func (r *repositoryStub) ListImportRows(context.Context, string) ([]domain.ImportRow, error) {
+	return nil, nil
+}
+func (r *repositoryStub) SetImportRowStatus(context.Context, string, int32, bool, *string) error {
+	return nil
+}
+func (r *repositoryStub) MarkImportValidated(context.Context, string, int32, int32, []byte) error {
+	return nil
+}
+func (r *repositoryStub) MarkImportPublished(context.Context, string, []byte) error {
 	return nil
 }
 

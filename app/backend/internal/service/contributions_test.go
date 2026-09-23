@@ -37,6 +37,11 @@ type contributionsRepositoryStub struct {
 	updateError   error
 
 	deleteError error
+
+	review      domain.ContributionReview
+	reviewError error
+	queueItems  []domain.ModerationQueueItem
+	queueStatus *string
 }
 
 func (s *contributionsRepositoryStub) FindCommunitySourceID(context.Context) (string, error) {
@@ -108,6 +113,25 @@ func (s *contributionsRepositoryStub) DeleteProductContribution(context.Context,
 
 func (s *contributionsRepositoryStub) DeleteFuelContribution(context.Context, string, string) error {
 	return s.deleteError
+}
+
+func (s *contributionsRepositoryStub) ListModerationQueue(_ context.Context, status *string, _ domain.Pagination) ([]domain.ModerationQueueItem, error) {
+	s.queueStatus = status
+	return s.queueItems, nil
+}
+
+func (s *contributionsRepositoryStub) ReviewContribution(_ context.Context, review domain.ContributionReview) error {
+	s.review = review
+	if s.reviewError != nil {
+		return s.reviewError
+	}
+	switch review.Type {
+	case "product_price":
+		s.productDetail.Contribution.Status = review.NewStatus
+	case "fuel_price":
+		s.fuelDetail.Contribution.Status = review.NewStatus
+	}
+	return nil
 }
 
 func newContribTestService(stub *contributionsRepositoryStub) *OjoZone {

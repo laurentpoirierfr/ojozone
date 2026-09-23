@@ -40,7 +40,13 @@ var (
 	// ErrNoCommunitySource indique qu'aucune source citoyenne n'est configurée.
 	ErrNoCommunitySource = errors.New("community source not configured")
 	// ErrContributionNotModifiable indique qu'une contribution a déjà été traitée.
-	ErrContributionNotModifiable = errors.New("contribution no longer modifiable")
+	ErrContributionNotModifiable = domain.ErrContributionNotModifiable
+	// ErrInvalidModeration indique une décision de modération invalide.
+	ErrInvalidModeration = errors.New("invalid moderation decision")
+	// ErrInvalidImport indique un import invalide.
+	ErrInvalidImport = errors.New("invalid import")
+	// ErrImportState indique une transition d'état d'import interdite.
+	ErrImportState = errors.New("invalid import state")
 )
 
 // Service expose les opérations métier consommées par les handlers HTTP.
@@ -59,6 +65,8 @@ type Service interface {
 	GetContribution(context.Context, string, string, string) (domain.ContributionDetail, error)
 	UpdateContribution(context.Context, string, string, domain.ContributionPatch) (domain.ContributionDetail, error)
 	DeleteContribution(context.Context, string, string) error
+	ListModerationQueue(context.Context, domain.ModerationFilter) ([]domain.ModerationQueueItem, error)
+	ReviewContribution(context.Context, string, string, domain.ContributionReviewInput) (domain.ContributionDetail, error)
 	ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error)
 	GetProduct(context.Context, string) (domain.Product, error)
 	GetProductByBarcode(context.Context, string) (domain.Product, error)
@@ -76,6 +84,11 @@ type Service interface {
 	UpsertResource(context.Context, string, json.RawMessage) (any, error)
 	ReplaceResource(context.Context, string, domain.ResourceKey, json.RawMessage) (any, error)
 	DeleteResource(context.Context, string, domain.ResourceKey) error
+	CreateImport(context.Context, string, domain.ImportCreate) (domain.Import, error)
+	ListImports(context.Context, domain.Pagination) ([]domain.Import, error)
+	GetImport(context.Context, string) (domain.Import, error)
+	ValidateImport(context.Context, string) (domain.Import, error)
+	PublishImport(context.Context, string) (domain.Import, error)
 }
 
 // OjoZone implémente les règles métier et délègue la persistance au repository.

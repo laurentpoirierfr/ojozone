@@ -24,6 +24,8 @@ const (
 	ResourceAggregates = "price-aggregates"
 	ResourceModeration = "moderation-events"
 	ResourceAdminUsers = "admin-users"
+	ResourceProducts   = "products"
+	ResourcePrices     = "product-prices"
 )
 
 func (s *OjoZone) ListResource(ctx context.Context, resource string, page domain.Pagination) (any, error) {

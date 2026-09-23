@@ -9,12 +9,25 @@ DOMAIN_MODEL ?= assets/domain-model.puml
 DOMAIN_MODEL_PNG ?= assets/domain-model.png
 PLANTUML_IMAGE ?= docker.io/plantuml/plantuml:1.2026.6
 
-.PHONY: help up db-up db-ready down restart ps logs migrate migrate-down migrate-version migration-new reset domain-model domain-model-source domain-model-png test-integration
+.PHONY: help up db-up db-ready down restart ps logs migrate migrate-down migrate-version migration-new reset domain-model domain-model-source domain-model-png test-integration api-up api-down api-logs
 
 help: ## Afficher les commandes disponibles
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "%-20s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 up: migrate ## Démarrer PostgreSQL puis appliquer les migrations
+
+api-up: migrate ## Démarrer l'API conteneurisée (backend + frontend) après les migrations
+	@cd app/frontend && test -f node_modules/.bin/vite || npm ci >/dev/null
+	$(COMPOSE) up -d --build api
+
+api-down: ## Arrêter l'API sans supprimer les données
+	$(COMPOSE) down api
+
+api-logs: ## Suivre les journaux de l'API
+	$(COMPOSE) logs -f api
+
+api-ready: api-up ## Attendre que l'API soit prête
+	@$(COMPOSE) exec -T api sh -c 'until wget -qO- http://127.0.0.1:8080/ops/readiness >/dev/null 2>&1; do sleep 1; done'
 
 db-up:
 	$(COMPOSE) up -d postgres

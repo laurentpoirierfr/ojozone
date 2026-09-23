@@ -266,6 +266,42 @@ definitions:
       transaction_type:
         type: string
     type: object
+  domain.Import:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: string
+      invalid_count:
+        type: integer
+      line_count:
+        type: integer
+      published_at:
+        type: string
+      report:
+        items:
+          type: object
+        type: array
+      resource_type:
+        type: string
+      status:
+        type: string
+      valid_count:
+        type: integer
+      validated_at:
+        type: string
+    type: object
+  domain.ImportCreate:
+    properties:
+      resource_type:
+        type: string
+      rows:
+        items:
+          type: object
+        type: array
+    type: object
   domain.IncomeUpsert:
     properties:
       amount:
@@ -350,6 +386,45 @@ definitions:
       previous_status:
         type: string
       reason_code:
+        type: string
+    type: object
+  domain.ModerationQueueItem:
+    properties:
+      amount:
+        type: string
+      confidence_score:
+        type: string
+      contributor_email:
+        type: string
+      contributor_id:
+        format: uuid
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      geo_area:
+        $ref: '#/definitions/domain.EntityRef'
+      id:
+        format: uuid
+        type: string
+      is_promotion:
+        type: boolean
+      location:
+        $ref: '#/definitions/domain.EntityRef'
+      observed_at:
+        type: string
+      quantity:
+        type: string
+      source:
+        $ref: '#/definitions/domain.SourceRef'
+      status:
+        type: string
+      subject:
+        type: string
+      type:
+        type: string
+      unit_code:
         type: string
     type: object
   domain.PriceAggregateUpsert:
@@ -676,6 +751,38 @@ definitions:
       meta:
         $ref: '#/definitions/httpapi.PaginationMeta'
     type: object
+  httpapi.ImportListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Import'
+        type: array
+      meta:
+        $ref: '#/definitions/httpapi.PaginationMeta'
+    type: object
+  httpapi.ImportResponse:
+    properties:
+      data:
+        $ref: '#/definitions/domain.Import'
+    type: object
+  httpapi.ModerationDecisionBody:
+    properties:
+      note:
+        example: Prix cohérent avec les relevés voisins
+        type: string
+      reason_code:
+        example: outlier
+        type: string
+    type: object
+  httpapi.ModerationQueueResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.ModerationQueueItem'
+        type: array
+      meta:
+        $ref: '#/definitions/httpapi.PaginationMeta'
+    type: object
   httpapi.PaginationMeta:
     properties:
       limit:
@@ -744,6 +851,225 @@ info:
   title: OjoZone API
   version: "1.0"
 paths:
+  /api/v1/admin/imports:
+    get:
+      parameters:
+      - default: 20
+        description: Nombre de résultats
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        description: Décalage
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ImportListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Lister les imports
+      tags:
+      - Administration
+    post:
+      consumes:
+      - application/json
+      description: Enregistre un lot de lignes pour un type de ressource au statut
+        draft.
+      parameters:
+      - description: Import à créer
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ImportCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/httpapi.ImportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Créer un import
+      tags:
+      - Administration
+  /api/v1/admin/imports/{id}:
+    get:
+      description: Retourne l'état (draft, validated, published) et le rapport d'erreurs.
+      parameters:
+      - description: UUID de l'import
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ImportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Lire un import
+      tags:
+      - Administration
+  /api/v1/admin/imports/{id}/publish:
+    post:
+      description: Applique les lignes valides. Réservé aux imports au statut validated.
+      parameters:
+      - description: UUID de l'import
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ImportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Publier un import
+      tags:
+      - Administration
+  /api/v1/admin/imports/{id}/validate:
+    post:
+      description: Valide chaque ligne et mémorise le rapport d'erreurs. Réservé aux
+        imports au statut draft.
+      parameters:
+      - description: UUID de l'import
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ImportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Valider un import
+      tags:
+      - Administration
   /api/v1/admin/users:
     get:
       description: Lecture seule en l'absence d'authentification ; password_hash n'est
@@ -2703,6 +3029,149 @@ paths:
           schema:
             $ref: '#/definitions/httpapi.Problem'
       summary: Consulter ou ajouter les événements de modération
+      tags:
+      - Modération
+  /api/v1/moderation/contributions/{id}/approve:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: UUID de la contribution
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Note facultative
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/httpapi.ModerationDecisionBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ContributionDetailResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Approuver une contribution
+      tags:
+      - Modération
+  /api/v1/moderation/contributions/{id}/reject:
+    post:
+      consumes:
+      - application/json
+      description: Le rejet exige une note expliquant le motif.
+      parameters:
+      - description: UUID de la contribution
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Motif du rejet
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/httpapi.ModerationDecisionBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ContributionDetailResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Rejeter une contribution
+      tags:
+      - Modération
+  /api/v1/moderation/queue:
+    get:
+      description: Contributeur, produit ou carburant, montant, lieu et état de chaque
+        contribution à contrôler.
+      parameters:
+      - description: Statut (pending, approved, rejected, flagged)
+        in: query
+        name: status
+        type: string
+      - default: 20
+        description: Nombre de résultats
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      - default: 0
+        description: Décalage
+        in: query
+        minimum: 0
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpapi.ModerationQueueResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpapi.Problem'
+      security:
+      - BearerAuth: []
+      summary: Lister la file de modération
       tags:
       - Modération
   /api/v1/price-aggregates:
