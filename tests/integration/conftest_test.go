@@ -82,6 +82,19 @@ func adminSession(t *testing.T) api.AuthResult {
 	return result
 }
 
+// moderatorSession connecte le compte moderateur prepare par scripts/run.sh.
+func moderatorSession(t *testing.T) api.AuthResult {
+	t.Helper()
+	email := getenv("OJZONE_TEST_MODERATOR_EMAIL", "moderator@example.com")
+	password := getenv("OJZONE_TEST_MODERATOR_PASSWORD", "moderator-password-123")
+	result, problem, err := client.Login(context.Background(), email, password)
+	if err != nil {
+		t.Fatalf("transport pendant la connexion moderateur : %v", err)
+	}
+	requireNoProblem(t, problem, "connexion moderateur")
+	return result
+}
+
 // requireNoProblem echoue si un reponse d'erreur HTTP a ete renvoyee.
 func requireNoProblem(t *testing.T, problem *api.Problem, step string) {
 	t.Helper()

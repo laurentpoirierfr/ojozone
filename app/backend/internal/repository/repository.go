@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/laurentpoirierfr/ojozone/internal/domain"
 	"github.com/laurentpoirierfr/ojozone/internal/store/db"
@@ -55,14 +56,17 @@ type Repository interface {
 	GetResource(context.Context, string, domain.ResourceKey) (any, error)
 	UpsertResource(context.Context, string, any, bool) (any, error)
 	DeleteResource(context.Context, string, domain.ResourceKey) error
+	ListModerationQueue(context.Context, *string, domain.Pagination) ([]domain.ModerationQueueItem, error)
+	ReviewContribution(context.Context, domain.ContributionReview) error
 }
 
 type PostgreSQL struct {
 	queries *db.Queries
+	pool    *pgxpool.Pool
 }
 
-func NewPostgreSQL(queries *db.Queries) *PostgreSQL {
-	return &PostgreSQL{queries: queries}
+func NewPostgreSQL(queries *db.Queries, pool *pgxpool.Pool) *PostgreSQL {
+	return &PostgreSQL{queries: queries, pool: pool}
 }
 
 func (r *PostgreSQL) Ping(ctx context.Context) error {

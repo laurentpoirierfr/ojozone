@@ -99,6 +99,12 @@ func NewRouter(appService service.Service, manager tokenParser, staticFS fs.FS, 
 	contributions.PATCH("/:id", handler.patchContribution)
 	contributions.DELETE("/:id", handler.deleteContribution)
 
+	moderation := api.Group("/moderation", handler.authenticate, requireRole(domain.RoleModerator, domain.RoleAdmin))
+	moderation.GET("/queue", handler.listModerationQueue)
+	moderation.GET("/contributions/:id", handler.getContribution)
+	moderation.POST("/contributions/:id/approve", handler.approveContribution)
+	moderation.POST("/contributions/:id/reject", handler.rejectContribution)
+
 	api.GET("/products", handler.listProducts)
 	api.POST("/products", handler.authenticate, requireRole(domain.RoleAdmin), handler.upsertProduct)
 	api.GET("/products/by-barcode/:barcode", handler.getProductByBarcode)
@@ -502,6 +508,8 @@ func handleServiceError(c *gin.Context, err error, fallback string) {
 		writeProblem(c, http.StatusBadRequest, "invalid_contribution", err.Error())
 	case errors.Is(err, service.ErrContributionNotModifiable):
 		writeProblem(c, http.StatusConflict, "not_modifiable", "La contribution a déjà été traitée et ne peut plus être modifiée.")
+	case errors.Is(err, service.ErrInvalidModeration):
+		writeProblem(c, http.StatusBadRequest, "invalid_moderation", err.Error())
 	case errors.Is(err, service.ErrNoCommunitySource):
 		writeProblem(c, http.StatusServiceUnavailable, "service_unavailable", "Aucune source citoyenne n'est configurée.")
 	case errors.Is(err, service.ErrInvalidID), errors.Is(err, service.ErrInvalidBarcode), errors.Is(err, service.ErrInvalidPagination), errors.Is(err, service.ErrInvalidProduct), errors.Is(err, service.ErrInvalidPrice), errors.Is(err, service.ErrInvalidResource):

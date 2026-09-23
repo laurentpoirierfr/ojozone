@@ -17,6 +17,9 @@ ADMIN_PASSWORD="${OJZONE_TEST_ADMIN_PASSWORD:-admin-password-123}"
 JWT_SECRET="${OJZONE_TEST_JWT_SECRET:-ojozone-integration-secret-0123456789abcdef}"
 # Hash bcrypt de ADMIN_PASSWORD (génére une fois, voir tests/README.md).
 ADMIN_PASSWORD_HASH='$2a$10$T9dMQMYiH7RVE1pVrfCw5ergGIntb8DUy4z/IXZVUXxhX/V6sZgdO'
+# Hash bcrypt du mot de passe par defaut du moderateur (voir tests/README.md).
+MODERATOR_EMAIL="${OJZONE_TEST_MODERATOR_EMAIL:-moderator@example.com}"
+MODERATOR_PASSWORD_HASH='$2a$10$NSv/Jl79kvUnTgJ11zyB8ekwV6d/BH6G9DpeS5TwVZ1BvSP4ezXb.'
 DATABASE_URL="postgres://ojozone@localhost:${POSTGRES_PORT}/${DB_NAME}?sslmode=disable&search_path=public"
 MIGRATE_DATABASE_URL="postgres://ojozone@postgres:5432/${DB_NAME}?sslmode=disable&search_path=public"
 SERVER_LOG="${OJZONE_TEST_LOG:-/tmp/ojozone-test-api.log}"
@@ -99,8 +102,9 @@ INSERT INTO locations (id, name, geo_area_id, address) VALUES
 ON CONFLICT DO NOTHING;
 
 INSERT INTO users (email, password_hash, role) VALUES
-    ('${ADMIN_EMAIL}', '${ADMIN_PASSWORD_HASH}', 'admin')
-ON CONFLICT (email) DO UPDATE SET role = 'admin';
+    ('${ADMIN_EMAIL}', '${ADMIN_PASSWORD_HASH}', 'admin'),
+    ('${MODERATOR_EMAIL}', '${MODERATOR_PASSWORD_HASH}', 'moderator')
+ON CONFLICT (email) DO UPDATE SET role = EXCLUDED.role;
 SQL
 
 echo "==> Compilation du serveur"

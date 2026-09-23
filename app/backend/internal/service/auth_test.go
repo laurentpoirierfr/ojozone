@@ -93,6 +93,12 @@ func (r *authRepositoryStub) DeleteProductContribution(context.Context, string, 
 func (r *authRepositoryStub) DeleteFuelContribution(context.Context, string, string) error {
 	return nil
 }
+func (r *authRepositoryStub) ListModerationQueue(context.Context, *string, domain.Pagination) ([]domain.ModerationQueueItem, error) {
+	return nil, nil
+}
+func (r *authRepositoryStub) ReviewContribution(context.Context, domain.ContributionReview) error {
+	return nil
+}
 func (r *authRepositoryStub) ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error) {
 	return nil, nil
 }

@@ -135,6 +135,12 @@ func (r *repositoryStub) UpsertProductPriceByID(_ context.Context, input domain.
 	return domain.ProductPrice{}, nil
 }
 func (r *repositoryStub) DeleteProductPrice(context.Context, string) error { return nil }
+func (r *repositoryStub) ListModerationQueue(context.Context, *string, domain.Pagination) ([]domain.ModerationQueueItem, error) {
+	return nil, nil
+}
+func (r *repositoryStub) ReviewContribution(context.Context, domain.ContributionReview) error {
+	return nil
+}
 func (r *repositoryStub) ListResource(context.Context, string, domain.Pagination) (any, error) {
 	return nil, nil
 }

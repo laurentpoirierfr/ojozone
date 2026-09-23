@@ -32,6 +32,19 @@ func bytesReader(body []byte) *bytes.Reader {
 	return bytes.NewReader(body)
 }
 
+// ModerationEvent est un evenement de moderation append-only.
+type ModerationEvent struct {
+	ID              string    `json:"id"`
+	ObservationType string    `json:"observation_type"`
+	ObservationID   string    `json:"observation_id"`
+	ModeratorID     *string   `json:"moderator_id"`
+	PreviousStatus  *string   `json:"previous_status"`
+	NewStatus       string    `json:"new_status"`
+	ReasonCode      *string   `json:"reason_code"`
+	Note            *string   `json:"note"`
+	CreatedAt       time.Time `json:"created_at"`
+}
+
 // Result est l'enveloppe standard des reponses metier a succes.
 type Result struct {
 	Data json.RawMessage `json:"data"`
@@ -144,6 +157,27 @@ type ContributionResult struct {
 type ContributionDetail struct {
 	Contribution
 	ContributorID string `json:"contributor_id"`
+}
+
+// ModerationQueueItem est une entree de la file de moderation.
+type ModerationQueueItem struct {
+	ID               string    `json:"id"`
+	Type             string    `json:"type"`
+	Status           string    `json:"status"`
+	Subject          string    `json:"subject"`
+	ContributorID    *string   `json:"contributor_id"`
+	ContributorEmail *string   `json:"contributor_email"`
+	Amount           string    `json:"amount"`
+	Currency         string    `json:"currency"`
+	Quantity         *string   `json:"quantity"`
+	UnitCode         *string   `json:"unit_code"`
+	IsPromotion      *bool     `json:"is_promotion"`
+	Location         EntityRef `json:"location"`
+	GeoArea          EntityRef `json:"geo_area"`
+	Source           SourceRef `json:"source"`
+	ObservedAt       time.Time `json:"observed_at"`
+	ConfidenceScore  *string   `json:"confidence_score"`
+	CreatedAt        time.Time `json:"created_at"`
 }
 
 // Product est un produit du catalogue.

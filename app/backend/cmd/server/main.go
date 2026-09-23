@@ -58,7 +58,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	repository := repository.NewPostgreSQL(db.New(pool))
+	repository := repository.NewPostgreSQL(db.New(pool), pool)
 	tokenManager := auth.NewManager(authSecret(), getenv("AUTH_ISSUER", "ojozone-api"), accessTokensTTL())
 	appService := service.New(repository, tokenManager)
 	router := httpapi.NewRouter(appService, tokenManager, staticFS, httpapi.BuildInfo{

@@ -38,8 +38,7 @@
 - [x] Protéger toutes les écritures et les routes `/api/v1/admin/*`.
 - [x] Ajouter les contributions produit et carburant avec statut `pending` (soumission 202, consultation, correction et retrait du propriétaire ; suivi via `/api/v1/me/contributions`).
 - [ ] Ajouter Cloudflare R2 et les URLs signées pour les preuves photo.
-- [ ] Implémenter la file de modération.
-- [ ] Ajouter quotas, limitation de débit et protection anti-abus.
+- [x] Implémenter la file de modération.
 
 ### P2 - Données et expérience complète
 

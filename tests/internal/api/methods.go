@@ -102,6 +102,43 @@ func (c *Client) DeleteContribution(ctx context.Context, accessToken, id string)
 	return c.fetch(ctx, http.MethodDelete, "/api/v1/contributions/"+id, accessToken, nil, nil)
 }
 
+// ListModerationQueue liste les contributions a moderer, filtrees par statut.
+func (c *Client) ListModerationQueue(ctx context.Context, accessToken, status string) ([]ModerationQueueItem, PaginationMeta, *Problem, error) {
+	path := "/api/v1/moderation/queue"
+	if status != "" {
+		path += "?status=" + url.QueryEscape(status)
+	}
+	var items []ModerationQueueItem
+	meta, problem, err := c.fetchList(ctx, http.MethodGet, path, accessToken, nil, &items)
+	return items, meta, problem, err
+}
+
+// ApproveContribution approuve une contribution et retourne son detail.
+func (c *Client) ApproveContribution(ctx context.Context, accessToken, id string, note string) (ContributionDetail, *Problem, error) {
+	var detail ContributionDetail
+	payload := map[string]any{}
+	if note != "" {
+		payload["note"] = note
+	}
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/moderation/contributions/"+id+"/approve", accessToken, payload, &detail)
+	return detail, problem, err
+}
+
+// RejectContribution rejette une contribution avec un motif obligatoire.
+func (c *Client) RejectContribution(ctx context.Context, accessToken, id, note string) (ContributionDetail, *Problem, error) {
+	var detail ContributionDetail
+	payload := map[string]any{"note": note}
+	problem, err := c.fetch(ctx, http.MethodPost, "/api/v1/moderation/contributions/"+id+"/reject", accessToken, payload, &detail)
+	return detail, problem, err
+}
+
+// ListModerationEvents liste les evenements de moderation (append-only, public).
+func (c *Client) ListModerationEvents(ctx context.Context) ([]ModerationEvent, PaginationMeta, *Problem, error) {
+	var events []ModerationEvent
+	meta, problem, err := c.fetchList(ctx, http.MethodGet, "/api/v1/moderation-events", "", nil, &events)
+	return events, meta, problem, err
+}
+
 // ListProducts recherche les produits publiquement (filtre search optionnel).
 func (c *Client) ListProducts(ctx context.Context, search string) ([]Product, PaginationMeta, *Problem, error) {
 	path := "/api/v1/products"

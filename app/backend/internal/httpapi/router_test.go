@@ -57,6 +57,12 @@ func (s serviceStub) UpdateContribution(context.Context, string, string, domain.
 	return domain.ContributionDetail{}, domain.ErrNotFound
 }
 func (s serviceStub) DeleteContribution(context.Context, string, string) error { return nil }
+func (s serviceStub) ListModerationQueue(context.Context, domain.ModerationFilter) ([]domain.ModerationQueueItem, error) {
+	return []domain.ModerationQueueItem{}, nil
+}
+func (s serviceStub) ReviewContribution(context.Context, string, string, domain.ContributionReviewInput) (domain.ContributionDetail, error) {
+	return domain.ContributionDetail{}, domain.ErrNotFound
+}
 func (s serviceStub) ListProducts(context.Context, domain.ProductFilter) ([]domain.Product, error) {
 	return []domain.Product{}, nil
 }
@@ -295,6 +301,10 @@ func TestWriteRoutesRequireAuthentication(t *testing.T) {
 		{method: http.MethodGet, path: "/api/v1/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
 		{method: http.MethodPatch, path: "/api/v1/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31", body: []byte(`{}`)},
 		{method: http.MethodDelete, path: "/api/v1/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
+		{method: http.MethodGet, path: "/api/v1/moderation/queue"},
+		{method: http.MethodGet, path: "/api/v1/moderation/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31"},
+		{method: http.MethodPost, path: "/api/v1/moderation/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/approve", body: []byte(`{}`)},
+		{method: http.MethodPost, path: "/api/v1/moderation/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/reject", body: []byte(`{}`)},
 	}
 
 	for _, test := range tests {
@@ -347,6 +357,40 @@ func TestMemberCanSubmitContributions(t *testing.T) {
 	}
 }
 
+func TestMemberCannotAccessModeration(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := newTestRouter(serviceStub{})
+	for _, test := range []struct {
+		method string
+		path   string
+	}{
+		{method: http.MethodGet, path: "/api/v1/moderation/queue"},
+		{method: http.MethodPost, path: "/api/v1/moderation/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/approve"},
+		{method: http.MethodPost, path: "/api/v1/moderation/contributions/ec2d9232-7ec5-44c4-85fc-1dfdd80b9d31/reject"},
+	} {
+		response := httptest.NewRecorder()
+		request := httptest.NewRequest(test.method, test.path, bytes.NewReader([]byte(`{}`)))
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Authorization", testBearer(t, domain.RoleMember))
+		router.ServeHTTP(response, request)
+		if response.Code != http.StatusForbidden {
+			t.Errorf("%s %s : status obtenu %d, attendu %d", test.method, test.path, response.Code, http.StatusForbidden)
+		}
+	}
+}
+
+func TestModeratorCanAccessModeration(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := newTestRouter(serviceStub{})
+	request := httptest.NewRequest(http.MethodGet, "/api/v1/moderation/queue", nil)
+	request.Header.Set("Authorization", testBearer(t, domain.RoleModerator))
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, request)
+	if response.Code != http.StatusOK {
+		t.Fatalf("status obtenu %d, attendu %d", response.Code, http.StatusOK)
+	}
+}
+
 func TestAuthRoutesAreRegistered(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	present := make(map[string]bool)
@@ -367,6 +411,10 @@ func TestAuthRoutesAreRegistered(t *testing.T) {
 		"GET /api/v1/contributions/:id",
 		"PATCH /api/v1/contributions/:id",
 		"DELETE /api/v1/contributions/:id",
+		"GET /api/v1/moderation/queue",
+		"GET /api/v1/moderation/contributions/:id",
+		"POST /api/v1/moderation/contributions/:id/approve",
+		"POST /api/v1/moderation/contributions/:id/reject",
 	}
 	for _, entry := range expected {
 		if !present[entry] {
